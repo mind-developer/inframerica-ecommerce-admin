@@ -1,0 +1,53 @@
+/** Mock seed, converted from the prototype's `src/mocks` with English field names. Temporary: deleted when the API ships. */
+import type { PaymentLink } from '@/types/paymentLinks';
+
+export const paymentLinksSeed: PaymentLink[] = [
+  {
+    id: 'lnk-aaaaaaaa-1',
+    customerId: 'cli-4',
+    email: 'treinamento@swissport.com',
+    description: 'Direção Defensiva — 10 vagas',
+    amount: 2400,
+    url: 'https://pay.infraamerica.com/pay/aaaaaaaa',
+    status: 'sent',
+    sentAt: '2026-04-12T08:35:00Z',
+    paidAt: null,
+    createdAt: '2026-04-12T08:30:00Z',
+  },
+  {
+    id: 'lnk-bbbbbbbb-2',
+    customerId: 'cli-5',
+    email: 'academia@infraero.gov.br',
+    description: 'Combo AVSEC + Operacional — 20 vagas',
+    amount: 9000,
+    url: 'https://pay.infraamerica.com/pay/bbbbbbbb',
+    status: 'sent',
+    sentAt: '2026-04-15T11:05:00Z',
+    paidAt: null,
+    createdAt: '2026-04-15T11:00:00Z',
+  },
+  {
+    id: 'lnk-cccccccc-3',
+    customerId: 'cli-7',
+    email: 'joao.pereira@gmail.com',
+    description: 'Conscientização AVSEC — 1 vaga',
+    amount: 185,
+    url: 'https://pay.infraamerica.com/pay/cccccccc',
+    status: 'paid',
+    sentAt: '2026-04-20T19:00:00Z',
+    paidAt: '2026-04-20T19:08:00Z',
+    createdAt: '2026-04-20T18:55:00Z',
+  },
+  {
+    id: 'lnk-dddddddd-4',
+    customerId: 'cli-1',
+    email: 'treinamento@latam.com',
+    description: 'Renovação anual AVSEC',
+    amount: 12000,
+    url: 'https://pay.infraamerica.com/pay/dddddddd',
+    status: 'draft',
+    sentAt: null,
+    paidAt: null,
+    createdAt: '2026-04-26T15:00:00Z',
+  },
+];

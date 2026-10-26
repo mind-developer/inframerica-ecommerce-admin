@@ -1,0 +1,55 @@
+/** Mock seed, converted from the prototype's `src/mocks` with English field names. Temporary: deleted when the API ships. */
+import type { Credential } from '@/types/catalog';
+
+export const credentialsSeed: Credential[] = [
+  {
+    id: 'cred-aeroportuaria',
+    name: 'Credencial Aeroportuária (ANAC)',
+    acronym: 'CA',
+    description: 'Credencial de acesso a áreas restritas de segurança, exigida para qualquer atividade em lado ar.',
+    validityMonths: 12,
+    sectorIds: ['set-avsec', 'set-operacional'],
+    active: true,
+    createdAt: '2025-01-10',
+  },
+  {
+    id: 'cred-atr',
+    name: 'Autorização de Trânsito em Pista',
+    acronym: 'ATR',
+    description: 'Habilita a condução de veículos em pátio, pista e vias de serviço do sítio aeroportuário.',
+    validityMonths: 24,
+    sectorIds: ['set-direcao', 'set-operacional'],
+    active: true,
+    createdAt: '2025-02-18',
+  },
+  {
+    id: 'cred-avsec',
+    name: 'Certificação AVSEC',
+    acronym: 'AVSEC',
+    description: 'Certificação em segurança da aviação civil contra atos de interferência ilícita.',
+    validityMonths: 12,
+    sectorIds: ['set-avsec'],
+    active: true,
+    createdAt: '2025-03-05',
+  },
+  {
+    id: 'cred-sita',
+    name: 'Operador de Sistemas de Embarque',
+    acronym: 'OSE',
+    description: 'Habilita a operação de sistemas SITA, balcões de check-in e portões de embarque.',
+    validityMonths: 36,
+    sectorIds: ['set-tecnologia'],
+    active: true,
+    createdAt: '2025-04-22',
+  },
+  {
+    id: 'cred-emergencia',
+    name: 'Brigada de Emergência Aeroportuária',
+    acronym: 'BEA',
+    description: 'Atuação em resposta a emergências e evacuação no sítio aeroportuário.',
+    validityMonths: 12,
+    sectorIds: ['set-operacional', 'set-infra'],
+    active: false,
+    createdAt: '2025-06-30',
+  },
+];

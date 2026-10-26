@@ -1,0 +1,58 @@
+/*
+ * Design tokens — the only file with raw colour values (ADR-0004).
+ * Values follow the prototype's running palette (navy + gold, Space Grotesk/Inter).
+ * Layer 1 (:root) holds the values; layer 2 (@theme inline, in globals.css) exposes them as utilities.
+ */
+:root {
+  --background: hsl(220 20% 97%);
+  --foreground: hsl(220 40% 13%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(220 40% 13%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(220 40% 13%);
+  --primary: hsl(220 60% 15%);
+  --primary-foreground: hsl(45 30% 90%);
+  --secondary: hsl(220 15% 90%);
+  --secondary-foreground: hsl(220 40% 13%);
+  --muted: hsl(220 15% 93%);
+  --muted-foreground: hsl(220 10% 46%);
+  --accent: hsl(42 70% 55%);
+  --accent-foreground: hsl(220 60% 10%);
+  --destructive: hsl(0 84% 60%);
+  --destructive-foreground: hsl(210 40% 98%);
+  --border: hsl(220 15% 88%);
+  --input: hsl(220 15% 88%);
+  --ring: hsl(220 60% 15%);
+
+  --navy: hsl(220 60% 15%);
+  --navy-light: hsl(220 45% 22%);
+  --graphite: hsl(220 10% 30%);
+  --gold: hsl(42 70% 55%);
+  --gold-light: hsl(42 60% 70%);
+  --cyan: hsl(195 80% 50%);
+  --electric: hsl(215 80% 55%);
+
+  /* Status tones: soft fill, border and strong text, replacing ad-hoc emerald/amber/red/blue classes. */
+  --success: hsl(152 61% 30%);
+  --success-soft: hsl(149 80% 95%);
+  --success-border: hsl(152 60% 80%);
+  --warning: hsl(32 81% 29%);
+  --warning-soft: hsl(48 100% 96%);
+  --warning-border: hsl(48 97% 77%);
+  --danger: hsl(0 70% 35%);
+  --danger-soft: hsl(0 93% 94%);
+  --danger-border: hsl(0 96% 89%);
+  --info: hsl(224 64% 33%);
+  --info-soft: hsl(214 95% 93%);
+  --info-border: hsl(213 97% 87%);
+  --violet: hsl(272 67% 35%);
+  --violet-soft: hsl(269 100% 95%);
+
+  --chart-1: hsl(220 60% 15%);
+  --chart-2: hsl(42 70% 55%);
+  --chart-3: hsl(195 80% 50%);
+  --chart-4: hsl(215 80% 55%);
+  --chart-5: hsl(152 61% 40%);
+
+  --radius: 0.5rem;
+}
