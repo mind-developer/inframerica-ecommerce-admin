@@ -76,6 +76,7 @@ function RevealButton({ revealed, onToggle }: { revealed: boolean; onToggle: () 
   return (
     <button
       type="button"
+      tabIndex={-1}
       onClick={onToggle}
       aria-label={revealed ? 'Ocultar senha' : 'Mostrar senha'}
       aria-pressed={revealed}
