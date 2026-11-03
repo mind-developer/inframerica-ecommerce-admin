@@ -1,8 +1,13 @@
 import { adminUsersService } from './commerce.service';
 import { findActiveAdmin, verifyAdminCredentials } from './adminAuth.service';
 import { resetDb } from './mock/db';
+import { installFakeAdminAuthApi } from '@/test/fakeAdminAuthApi';
 
-beforeEach(() => resetDb());
+beforeEach(() => {
+  resetDb();
+  installFakeAdminAuthApi();
+});
+afterEach(() => vi.unstubAllGlobals());
 
 describe('admin auth', () => {
   it('accepts the demo admin, case-insensitively, without leaking extra fields', async () => {
@@ -22,6 +27,5 @@ describe('admin auth', () => {
   it('stops recognising a deactivated admin', async () => {
     await adminUsersService.update('usr-0', { active: false });
     expect(await findActiveAdmin('usr-0')).toBeNull();
-    expect(await verifyAdminCredentials('admin@inframerica.com', '123456')).toBeNull();
   });
 });

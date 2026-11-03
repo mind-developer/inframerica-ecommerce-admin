@@ -1,5 +1,5 @@
 import 'server-only';
-import { adminPasswordsSeed, DEFAULT_ORDER_SETTINGS } from '@/mocks/adminCredentials';
+import { DEFAULT_ORDER_SETTINGS } from '@/mocks/adminCredentials';
 import { adminUsersSeed } from '@/mocks/adminUsers';
 import { cohortsSeed } from '@/mocks/cohorts';
 import { concessionairesSeed } from '@/mocks/concessionaires';
@@ -30,7 +30,6 @@ const createDb = () => ({
   siteContent: { value: structuredClone(siteContentSeed) },
   storeSettings: { value: structuredClone(storeSettingsSeed) },
   orderSettings: { value: structuredClone(DEFAULT_ORDER_SETTINGS) },
-  adminPasswords: new Map(Object.entries(adminPasswordsSeed)),
 });
 
 type MockDb = ReturnType<typeof createDb>;

@@ -23,7 +23,7 @@ The storefront is a separate app: `../inframerica-ecommerce`. Visual and behavio
 
 `pnpm dev` (port 3001 via `.claude/launch.json`) · `pnpm build` · `pnpm typecheck` · `pnpm lint` · `pnpm format` · `pnpm test` / `pnpm test:watch`
 
-Demo admin (mock): `admin@inframerica.com` / `123456`.
+Sign-in needs the API running (`../inframerica-ecommerce-api`, port 3333). Demo admin (API seed): `admin@inframerica.com` / `123456`. **Provisional:** the API checks the e-mail/password, then the panel keeps its own signed session cookie and reads "still active" from the mock admin users. The client uses Microsoft SSO, which replaces this whole flow (`services/adminAuth.service.ts`).
 
 ## Structure
 
