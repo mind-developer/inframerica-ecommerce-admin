@@ -57,7 +57,7 @@ Enforced by ESLint (`pnpm lint` fails):
 ## Data and caching
 
 - Flow: server component → feature `data/` (`'use cache'`) or action → `services/<domain>.service.ts` → `services/mock` (until the API exists; see the prototype's `docs/API_CONTRATO.md`).
-- **The Clientes screen reads the API** (`services/customers.service.ts`, no cache) with the admin's API token, kept in the httpOnly `inframerica_admin_api` cookie. Password buttons call the API too (real e-mail; a generated link replaces earlier ones and lasts 1 hour). Orders, coupons and the dashboard still use the mock customers, so a real customer has no orders yet.
+- **The Clientes screen reads the API** (`services/customers.service.ts`, no cache) with the admin's API token, kept in the httpOnly `inframerica_admin_api` cookie. Password buttons call the API too (real e-mail; a generated link replaces earlier ones and lasts 1 hour). **Sectors too** (`services/sectors.service.ts`): the list filters and paginates on the API, and `getSectors()` feeds the selects uncached. Orders, coupons and the dashboard still use the mock customers, so a real customer has no orders yet.
 - Tags live in `constants/cacheTags.ts`. Orders and enrollments use `cacheLife('minutes')` (they change from the store); catalog and settings use hours/days.
 - Never call `cookies()`/`connection()` inside `'use cache'`. Every page renders `requireAdmin()` + data inside `<Suspense>`; the build fails otherwise (blocking route).
 - The mock store is per process: edits here don't reach the storefront's mock until both talk to the API. The revalidate webhook is wired for when they do.

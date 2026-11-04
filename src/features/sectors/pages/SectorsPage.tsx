@@ -1,24 +1,29 @@
+import { createLoader, type SearchParams } from 'nuqs/server';
 import { Suspense } from 'react';
 import { PageSkeleton } from '@/components/ui/PageSkeleton';
 import { requireAdmin } from '@/features/auth/server';
 import { getCourses } from '@/features/courses/server';
+import { listSectorPage } from '@/services/sectors.service';
 import { SectorsView } from '../components/SectorsView';
-import { getSectors } from '../data/sectors';
+import { sectorListParams } from '../utils/sectorListParams';
 
-export function SectorsPage() {
+const loadParams = createLoader(sectorListParams);
+
+export function SectorsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   return (
     <Suspense fallback={<PageSkeleton />}>
-      <SectorsContent />
+      <SectorsContent searchParams={searchParams} />
     </Suspense>
   );
 }
 
-async function SectorsContent() {
+async function SectorsContent({ searchParams }: { searchParams: Promise<SearchParams> }) {
   await requireAdmin();
-  const [sectors, courses] = await Promise.all([getSectors(), getCourses()]);
+  const params = await loadParams(searchParams);
+  const [sectors, courses] = await Promise.all([listSectorPage(params), getCourses()]);
   const courseCountBySector = courses.reduce<Record<string, number>>(
     (acc, c) => ({ ...acc, [c.sectorId]: (acc[c.sectorId] ?? 0) + 1 }),
     {},
   );
-  return <SectorsView sectors={sectors} courseCountBySector={courseCountBySector} />;
+  return <SectorsView result={sectors} courseCountBySector={courseCountBySector} />;
 }

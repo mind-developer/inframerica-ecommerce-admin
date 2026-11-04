@@ -10,7 +10,6 @@ import { customersSeed } from '@/mocks/customers';
 import { enrollmentsSeed } from '@/mocks/enrollments';
 import { ordersSeed } from '@/mocks/orders';
 import { paymentLinksSeed } from '@/mocks/paymentLinks';
-import { sectorsSeed } from '@/mocks/sectors';
 import { storeSettingsSeed } from '@/mocks/settings';
 import { siteContentSeed } from '@/mocks/siteContent';
 import { MockTable } from './table';
@@ -20,7 +19,6 @@ const createDb = () => ({
   credentials: new MockTable(credentialsSeed),
   customers: new MockTable(customersSeed),
   coupons: new MockTable(couponsSeed),
-  sectors: new MockTable(sectorsSeed),
   orders: new MockTable(ordersSeed),
   cohorts: new MockTable(cohortsSeed),
   adminUsers: new MockTable(adminUsersSeed),

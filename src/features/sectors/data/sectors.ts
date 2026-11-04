@@ -1,11 +1,5 @@
 import 'server-only';
-import { cacheLife, cacheTag } from 'next/cache';
-import { CACHE_TAGS } from '@/constants/cacheTags';
-import { sectorsService } from '@/services/catalog.service';
+import { listAllSectors } from '@/services/sectors.service';
 
-export async function getSectors() {
-  'use cache';
-  cacheTag(CACHE_TAGS.sectors);
-  cacheLife('days');
-  return sectorsService.list();
-}
+/** Every sector, for the selects on other screens. Read per request: it needs the admin's API token. */
+export const getSectors = () => listAllSectors();

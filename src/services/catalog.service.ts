@@ -1,7 +1,6 @@
 import 'server-only';
 import type { Course, CourseInput, Credential, CredentialInput } from '@/types/catalog';
 import type { Id } from '@/types/common';
-import type { Sector, SectorInput } from '@/types/sectors';
 import { createCrudService } from './mock/crud';
 import { getDb } from './mock/db';
 import { latency, nowIso } from './mock/table';
@@ -29,10 +28,4 @@ export const credentialsService = createCrudService<Credential, CredentialInput>
   () => getDb().credentials,
   (input) => ({ ...input, createdAt: nowIso() }),
   'cred',
-);
-
-export const sectorsService = createCrudService<Sector, SectorInput>(
-  () => getDb().sectors,
-  (input) => ({ ...input }),
-  'set',
 );

@@ -10,3 +10,11 @@ export interface Sector {
 }
 
 export type SectorInput = Omit<Sector, 'id'>;
+
+/** One page of the sectors list, as the API answers it. */
+export interface SectorPage {
+  items: Sector[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
