@@ -22,7 +22,7 @@ describe('saveCoupon', () => {
   });
 
   it('rejects duplicated codes, zero values and percentages above 100', async () => {
-    expect(await saveCoupon(null, { ...emptyCoupon, code: 'skypass10' })).toEqual({
+    expect(await saveCoupon(null, { ...emptyCoupon, code: 'infra10' })).toEqual({
       ok: false,
       error: 'Já existe um cupom com este código',
     });
@@ -34,7 +34,7 @@ describe('saveCoupon', () => {
   });
 
   it('lets a coupon keep its own code when edited', async () => {
-    const own = (await couponsService.list()).find((c) => c.code === 'SKYPASS10')!;
-    expect((await saveCoupon(own.id, { ...emptyCoupon, code: 'SKYPASS10', description: 'editado' })).ok).toBe(true);
+    const own = (await couponsService.list()).find((c) => c.code === 'INFRA10')!;
+    expect((await saveCoupon(own.id, { ...emptyCoupon, code: 'INFRA10', description: 'editado' })).ok).toBe(true);
   });
 });

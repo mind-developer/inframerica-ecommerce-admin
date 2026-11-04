@@ -19,7 +19,7 @@ import {
   type ReportProduct,
 } from './salesReport';
 
-const ORIGIN = 'https://skypass.test';
+const ORIGIN = 'https://inframerica.test';
 
 const customer = (over: Partial<Customer> = {}): Customer => ({
   id: 'cli-1',

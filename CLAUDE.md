@@ -2,7 +2,7 @@
 
 @AGENTS.md
 
-Admin panel of **SkyPass / Inframérica**: the back office of the airport-services e-commerce (training courses, credentialing, VIP lounge) for Brasília airport. The team manages the catalog (courses, credentials, sectors), sales (orders, customers, coupons, payment links), cohorts and their people, site content (texts, banners), store settings and admin users. The dashboard summarizes revenue with charts.
+Admin panel of **Inframérica**: the back office of the airport-services e-commerce (training courses, credentialing, VIP lounge) for Brasília airport. The team manages the catalog (courses, credentials, sectors), sales (orders, customers, coupons, payment links), cohorts and their people, site content (texts, banners), store settings and admin users. The dashboard summarizes revenue with charts.
 
 The storefront is a separate app: `../inframerica-ecommerce`. Visual and behavioural reference: the prototype `../remix-of-infra-america-skypass` (its `docs/` explain every flow and rule; admin screens live in `src/pages/admin`).
 

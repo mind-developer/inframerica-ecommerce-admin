@@ -3,8 +3,8 @@ import type { Coupon } from '@/types/coupons';
 
 export const couponsSeed: Coupon[] = [
   {
-    id: 'cup-skypass10',
-    code: 'SKYPASS10',
+    id: 'cup-infra10',
+    code: 'INFRA10',
     description: '10% de desconto em toda a plataforma',
     type: 'percent',
     value: 10,

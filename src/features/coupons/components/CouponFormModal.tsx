@@ -51,7 +51,7 @@ export function CouponFormModal({
       description="O desconto é validado no checkout: código, prazo, limite de usos, valor mínimo e cursos aplicáveis."
     >
       <form.AppField name="code">
-        {(f) => <f.TextField label="Código" placeholder="SKYPASS10" inputClassName="font-mono uppercase" required />}
+        {(f) => <f.TextField label="Código" placeholder="INFRA10" inputClassName="font-mono uppercase" required />}
       </form.AppField>
       <form.AppField name="description">
         {(f) => <f.TextField label="Descrição" placeholder="10% de desconto em toda a plataforma" />}

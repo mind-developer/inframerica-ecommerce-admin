@@ -35,12 +35,12 @@ const createDb = () => ({
 type MockDb = ReturnType<typeof createDb>;
 
 // Kept on globalThis so dev hot reloads don't wipe the data between edits.
-const holder = globalThis as typeof globalThis & { __skypassAdminMockDb?: MockDb };
+const holder = globalThis as typeof globalThis & { __inframericaAdminMockDb?: MockDb };
 
 /** The in-memory "database" behind every service until the API ships. */
-export const getDb = (): MockDb => (holder.__skypassAdminMockDb ??= createDb());
+export const getDb = (): MockDb => (holder.__inframericaAdminMockDb ??= createDb());
 
 /** Test helper: back to the seeds. */
 export const resetDb = () => {
-  holder.__skypassAdminMockDb = createDb();
+  holder.__inframericaAdminMockDb = createDb();
 };

@@ -1,6 +1,6 @@
 # inframerica-ecommerce-admin
 
-Admin panel of **SkyPass — Inframérica** (Brasília airport services): dashboard with revenue charts, orders (filters, refunds, credit linking, sales report CSV), customers, courses and their public preview, cohorts and enrolled people, coupons, payment links, credentials, sectors, site content and banners, store settings and admin users. Next.js 16 App Router with Cache Components.
+Admin panel of **Inframérica** (Brasília airport services): dashboard with revenue charts, orders (filters, refunds, credit linking, sales report CSV), customers, courses and their public preview, cohorts and enrolled people, coupons, payment links, credentials, sectors, site content and banners, store settings and admin users. Next.js 16 App Router with Cache Components.
 
 Ported from the front-end prototype (`remix-of-infra-america-skypass`). The storefront lives in [`inframerica-ecommerce`](https://github.com/mind-developer/inframerica-ecommerce).
 

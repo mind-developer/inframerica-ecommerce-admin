@@ -33,7 +33,7 @@ export function EmailPreviewModal({ link, onClose }: { link: PaymentLink | null;
             </p>
             <p>Para concluir o pagamento, acesse:</p>
             <p className="rounded bg-background p-2 font-mono text-xs break-all">{link.url}</p>
-            <p className="text-xs text-muted-foreground">Atenciosamente, Inframérica SkyPass</p>
+            <p className="text-xs text-muted-foreground">Atenciosamente, Inframérica</p>
           </div>
         </div>
       )}

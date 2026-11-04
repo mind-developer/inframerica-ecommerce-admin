@@ -8,7 +8,7 @@ export const cohortsSeed: Cohort[] = [
     startDate: '2026-05-12',
     endDate: '2026-05-12',
     schedule: '08:00–17:00',
-    location: 'Online — Plataforma SkyPass',
+    location: 'Online — Plataforma Inframérica',
     totalSeats: 50,
     takenSeats: 32,
     status: 'open',

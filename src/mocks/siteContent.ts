@@ -3,7 +3,7 @@ import type { SiteContent } from '@/types/content';
 
 export const siteContentSeed: SiteContent = {
   hero: {
-    eyebrow: 'INFRAMÉRICA SKYPASS',
+    eyebrow: 'INFRAMÉRICA',
     title: 'Serviços Premium do',
     titleHighlight: 'Aeroporto de Brasília',
     subtitle: 'Reserve Sala VIP, agende salas corporativas, compre cursos e solicite credenciamentos.',
@@ -77,6 +77,6 @@ export const siteContentSeed: SiteContent = {
     },
   ],
   about:
-    'A Inframérica SkyPass reúne os serviços de credenciamento, capacitação e conveniência do Aeroporto Internacional de Brasília em um único canal digital.',
+    'A Inframérica reúne os serviços de credenciamento, capacitação e conveniência do Aeroporto Internacional de Brasília em um único canal digital.',
   updatedAt: '2026-09-01T12:00:00Z',
 };

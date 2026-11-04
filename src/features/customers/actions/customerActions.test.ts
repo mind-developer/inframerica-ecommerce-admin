@@ -69,7 +69,7 @@ describe('createTargetedCoupon', () => {
       (await createTargetedCoupon('cli-2', 'GOL', { code: 'x', type: 'percent', value: 120, maxUses: null })).ok,
     ).toBe(false);
     expect(
-      await createTargetedCoupon('cli-2', 'GOL', { code: 'skypass10', type: 'fixed', value: 10, maxUses: null }),
+      await createTargetedCoupon('cli-2', 'GOL', { code: 'infra10', type: 'fixed', value: 10, maxUses: null }),
     ).toEqual({ ok: false, error: 'Já existe um cupom com este código' });
   });
 });
