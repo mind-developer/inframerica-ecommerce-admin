@@ -20,6 +20,7 @@ export function BannersView({ banners: all }: { banners: Banner[] }) {
   return (
     <>
       <PageHeader
+        soon
         title="Banners"
         subtitle={`${banners.length} banner(s) cadastrados · exibidos no site público conforme ordem e período`}
         actions={

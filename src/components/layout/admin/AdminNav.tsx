@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { ComingSoonBadge } from '@/components/ui/ComingSoonBadge';
 import { screenOf } from '@/constants/access';
 import { cn } from '@/utils/cn';
 import { useAccess } from './AccessProvider';
@@ -18,7 +19,7 @@ export function AdminNavLinks({ pathname, onNavigate }: { pathname: string | nul
   const allowed = NAV_ITEMS.filter((item) => permissions.includes(`${screenOf(item.href)?.resource}.read`));
   return (
     <nav aria-label="Painel" className="flex-1 space-y-1 overflow-y-auto p-4">
-      {allowed.map(({ href, label, Icon, exact }) => {
+      {allowed.map(({ href, label, Icon, exact, soon }) => {
         const active = pathname !== null && (exact ? pathname === href : pathname.startsWith(href));
         return (
           <Link
@@ -31,7 +32,9 @@ export function AdminNavLinks({ pathname, onNavigate }: { pathname: string | nul
               active ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white',
             )}
           >
-            <Icon aria-hidden className="size-4" /> {label}
+            <Icon aria-hidden className="size-4 shrink-0" />
+            <span className="min-w-0 leading-tight">{label}</span>
+            {soon && <ComingSoonBadge className="ml-auto px-1.5 text-[10px]" />}
           </Link>
         );
       })}

@@ -27,6 +27,7 @@ export function ContentEditor({ content }: { content: SiteContent }) {
   return (
     <>
       <PageHeader
+        soon
         title="Conteúdo do Site"
         subtitle="Textos exibidos no site público — alterações refletem imediatamente para os visitantes."
         actions={

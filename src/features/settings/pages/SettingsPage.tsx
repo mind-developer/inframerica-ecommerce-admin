@@ -8,7 +8,7 @@ import { getCachedStoreSettings } from '../data/settings';
 export function SettingsPage() {
   return (
     <>
-      <PageHeader title="Configurações" subtitle="Configurações operacionais da loja de treinamentos." />
+      <PageHeader soon title="Configurações" subtitle="Configurações operacionais da loja de treinamentos." />
       <Suspense fallback={<PageSkeleton rows={2} />}>
         <SettingsContent />
       </Suspense>

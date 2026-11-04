@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { submitHandler, useAppForm } from '@/components/ui/form';
 import { Modal } from '@/components/ui/Modal';
+import { ComingSoonBadge } from '@/components/ui/ComingSoonBadge';
 import { tabPanelProps, Tabs } from '@/components/ui/Tabs';
 import { BILLING_TAG_LABEL } from '@/constants/labels';
 import { useServerAction } from '@/components/ui/useServerAction';
@@ -98,7 +99,12 @@ export function CustomerModal({
         {tab === 'pedidos' && (
           <CustomerOrdersTab customerId={customer.id} orders={orders.filter((o) => o.customerId === customer.id)} />
         )}
-        {tab === 'cupom' && <TargetedCouponForm customer={customer} />}
+        {tab === 'cupom' && (
+          <div className="space-y-3">
+            <ComingSoonBadge />
+            <TargetedCouponForm customer={customer} />
+          </div>
+        )}
       </div>
     </Modal>
   );

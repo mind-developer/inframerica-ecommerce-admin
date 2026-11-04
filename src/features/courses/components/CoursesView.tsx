@@ -38,6 +38,7 @@ export function CoursesView({
   return (
     <>
       <PageHeader
+        soon
         title="Cursos"
         subtitle={`${courses.length} cursos · ${courses.filter((c) => c.active).length} publicados`}
         actions={

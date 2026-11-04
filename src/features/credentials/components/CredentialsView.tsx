@@ -29,6 +29,7 @@ export function CredentialsView({ credentials, sectors }: { credentials: Credent
   return (
     <>
       <PageHeader
+        soon
         title="Credenciais"
         subtitle={`${credentials.length} credenciais cadastradas · cada uma habilita um ou mais setores`}
         actions={

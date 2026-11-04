@@ -11,7 +11,7 @@ import { DashboardView } from '../components/DashboardView';
 export function DashboardPage() {
   return (
     <>
-      <PageHeader title="Dashboard" subtitle="Visão geral da operação" />
+      <PageHeader soon title="Dashboard" subtitle="Visão geral da operação" />
       <Suspense fallback={<PageSkeleton rows={6} />}>
         <DashboardContent />
       </Suspense>

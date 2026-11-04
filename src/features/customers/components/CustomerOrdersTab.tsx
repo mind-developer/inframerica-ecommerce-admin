@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Route } from 'next';
+import { ComingSoonBadge } from '@/components/ui/ComingSoonBadge';
 import { PendingRuleBadge } from '@/components/ui/PendingRuleBadge';
 import { Table, TBody, TD, TH, THead, TR } from '@/components/ui/Table';
 import { ORDER_STATUS_LABEL } from '@/constants/labels';
@@ -12,6 +13,7 @@ export function CustomerOrdersTab({ customerId, orders }: { customerId: string; 
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
+        <ComingSoonBadge />
         <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
           {orders.length > 10 ? '10 pedidos mais recentes' : `${orders.length} pedido(s)`}
           {orders.length > 10 && (

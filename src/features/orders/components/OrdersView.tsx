@@ -35,6 +35,7 @@ export function OrdersView({ orders, settings, customers, courses, enrollments, 
   return (
     <>
       <PageHeader
+        soon
         title="Pedidos"
         subtitle="Acompanhe vendas, pagamentos e créditos vinculados."
         actions={tab === 'lista' && <ExportReportButton orders={shown} lookups={lookups} />}

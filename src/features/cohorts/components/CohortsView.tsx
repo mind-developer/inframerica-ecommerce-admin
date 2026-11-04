@@ -23,6 +23,7 @@ export function CohortsView({ cohorts, courses }: { cohorts: Cohort[]; courses: 
   return (
     <>
       <PageHeader
+        soon
         title="Turmas"
         subtitle={`${cohorts.length} turmas cadastradas`}
         actions={

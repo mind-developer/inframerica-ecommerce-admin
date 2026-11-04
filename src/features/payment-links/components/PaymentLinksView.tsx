@@ -20,6 +20,7 @@ export function PaymentLinksView({ links, customers }: { links: PaymentLink[]; c
   return (
     <>
       <PageHeader
+        soon
         title="Links de Pagamento"
         subtitle="Gere e envie cobranças por email"
         actions={

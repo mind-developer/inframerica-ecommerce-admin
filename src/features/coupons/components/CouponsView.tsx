@@ -38,6 +38,7 @@ export function CouponsView({
   return (
     <>
       <PageHeader
+        soon
         title="Cupons"
         subtitle={`${coupons.length} cupons cadastrados · usados ${coupons.reduce((n, c) => n + c.uses, 0)} vezes`}
         actions={
