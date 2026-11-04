@@ -13,7 +13,7 @@ export interface Customer {
   phone: string;
   company: string;
   document: string;
-  sectorId: string | null;
+  sectorId?: string | null;
   createdAt: string;
   /** CNPJ; may equal `document` for companies, kept apart for individuals with a linked company. */
   cnpj?: string;

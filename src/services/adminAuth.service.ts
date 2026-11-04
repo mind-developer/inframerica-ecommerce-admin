@@ -12,12 +12,15 @@ import { getDb } from './mock/db';
 const toSession = ({ id, name, email, role }: AdminSessionUser): AdminSessionUser => ({ id, name, email, role });
 
 /** null for wrong credentials or an inactive admin; throws ApiUnavailableError when the API is down. */
-export async function verifyAdminCredentials(email: string, password: string): Promise<AdminSessionUser | null> {
-  const r = await apiRequest<{ user: AdminSessionUser }>('/auth/admin/login', {
+export async function verifyAdminCredentials(
+  email: string,
+  password: string,
+): Promise<(AdminSessionUser & { accessToken: string }) | null> {
+  const r = await apiRequest<{ accessToken: string; user: AdminSessionUser }>('/auth/admin/login', {
     method: 'POST',
     body: { email: email.trim().toLowerCase(), password },
   });
-  return r.status === 200 && r.body ? toSession(r.body.user) : null;
+  return r.status === 200 && r.body ? { ...toSession(r.body.user), accessToken: r.body.accessToken } : null;
 }
 
 /** The admin behind a session, only while still active. */

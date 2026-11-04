@@ -18,7 +18,11 @@ export interface ApiResponse<T> {
 
 export async function apiRequest<T>(
   path: string,
-  { method = 'GET', body, token }: { method?: 'GET' | 'POST'; body?: unknown; token?: string } = {},
+  {
+    method = 'GET',
+    body,
+    token,
+  }: { method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'; body?: unknown; token?: string } = {},
 ): Promise<ApiResponse<T>> {
   let res: Response;
   try {

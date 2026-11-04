@@ -7,7 +7,7 @@ import 'server-only';
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { cookies } from 'next/headers';
 import { connection } from 'next/server';
-import { SESSION_COOKIE } from '@/constants/session';
+import { API_TOKEN_COOKIE, SESSION_COOKIE } from '@/constants/session';
 
 export { SESSION_COOKIE };
 
@@ -40,17 +40,26 @@ export async function getSessionUserId(): Promise<string | null> {
   return verifySession((await cookies()).get(SESSION_COOKIE)?.value);
 }
 
-export async function startSession(userId: string): Promise<void> {
+export async function getApiToken(): Promise<string | undefined> {
+  return (await cookies()).get(API_TOKEN_COOKIE)?.value;
+}
+
+export async function startSession(userId: string, apiToken: string): Promise<void> {
   const expiresAt = Date.now() + MAX_AGE_SECONDS * 1000;
-  (await cookies()).set(SESSION_COOKIE, signSession(userId, expiresAt), {
+  const jar = await cookies();
+  const options = {
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
     path: '/',
     maxAge: MAX_AGE_SECONDS,
-  });
+  } as const;
+  jar.set(SESSION_COOKIE, signSession(userId, expiresAt), options);
+  jar.set(API_TOKEN_COOKIE, apiToken, options);
 }
 
 export async function endSession(): Promise<void> {
-  (await cookies()).delete(SESSION_COOKIE);
+  const jar = await cookies();
+  jar.delete(SESSION_COOKIE);
+  jar.delete(API_TOKEN_COOKIE);
 }

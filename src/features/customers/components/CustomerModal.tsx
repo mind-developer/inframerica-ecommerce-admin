@@ -10,7 +10,6 @@ import { BILLING_TAG_LABEL } from '@/constants/labels';
 import { useServerAction } from '@/components/ui/useServerAction';
 import type { Customer } from '@/types/customers';
 import type { Order } from '@/types/orders';
-import type { Sector } from '@/types/sectors';
 import { saveCustomer } from '../actions/customerActions';
 import { customerSchema, type CustomerFormValues } from '../schemas/customerSchema';
 import { CustomerDataForm } from './CustomerDataForm';
@@ -25,7 +24,6 @@ const toValues = (c: Customer): CustomerFormValues => ({
   phone: c.phone,
   company: c.company,
   document: c.document,
-  sectorId: c.sectorId ?? '',
   cnpj: c.cnpj ?? '',
   category: c.category ?? 'company',
   billingTag: c.billingTag ?? 'paying',
@@ -39,12 +37,10 @@ const toValues = (c: Customer): CustomerFormValues => ({
 export function CustomerModal({
   customer,
   orders,
-  sectors,
   onClose,
 }: {
   customer: Customer;
   orders: Order[];
-  sectors: Sector[];
   onClose: () => void;
 }) {
   const [tab, setTab] = useState<Tab>('dados');
@@ -96,7 +92,7 @@ export function CustomerModal({
       <div {...tabPanelProps('cliente', tab)}>
         {tab === 'dados' && (
           <form noValidate onSubmit={submitHandler(form)}>
-            <CustomerDataForm form={form} sectors={sectors} />
+            <CustomerDataForm form={form} />
           </form>
         )}
         {tab === 'pedidos' && (

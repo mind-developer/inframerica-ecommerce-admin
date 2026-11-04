@@ -3,7 +3,7 @@ import { cacheLife, cacheTag } from 'next/cache';
 import { CACHE_TAGS } from '@/constants/cacheTags';
 import { customersService } from '@/services/commerce.service';
 
-/** Customers are created by sign-ups and purchases on the store, so the cache is short. */
+/** The mock customers behind orders, coupons and the dashboard; the Clientes screen reads the API. */
 export async function getCustomers() {
   'use cache';
   cacheTag(CACHE_TAGS.customers);

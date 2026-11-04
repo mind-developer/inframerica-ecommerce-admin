@@ -16,6 +16,7 @@ describe('admin auth', () => {
       name: 'Administrador Inframérica',
       email: 'admin@inframerica.com',
       role: 'super_admin',
+      accessToken: 'adm-token',
     });
   });
 

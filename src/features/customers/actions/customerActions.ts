@@ -1,10 +1,11 @@
 'use server';
 
+import { refresh } from 'next/cache';
 import { adminMutation } from '@/features/auth/server';
-import { couponsService, customersService } from '@/services/commerce.service';
+import { couponsService } from '@/services/commerce.service';
+import { removeCustomer, updateCustomer } from '@/services/customers.service';
 import type { ActionResult } from '@/types/common';
 import type { Coupon } from '@/types/coupons';
-import { onlyDigits } from '@/utils/format';
 import {
   customerSchema,
   targetedCouponSchema,
@@ -14,23 +15,19 @@ import {
 
 const fail = (error: string) => ({ ok: false as const, error });
 
-/** Updates a customer. E-mail and CNPJ must stay unique (customers are created by the store). */
+/** The API keeps e-mail and CNPJ unique; customers themselves are created by the store's sign-up. */
 export async function saveCustomer(id: string, values: CustomerFormValues): Promise<ActionResult<unknown>> {
   const parsed = customerSchema.safeParse(values);
   if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? 'Dados inválidos');
-  const others = (await customersService.list()).filter((c) => c.id !== id);
-  const data = parsed.data;
-  if (others.some((c) => c.email.trim().toLowerCase() === data.email.toLowerCase()))
-    return fail('Já existe um cliente com este email');
-  // Seed companies keep their CNPJ in `document`, so both fields count as "this CNPJ is taken".
-  const cnpj = onlyDigits(data.cnpj);
-  if (cnpj && others.some((c) => [c.cnpj, c.document].some((d) => d && onlyDigits(d) === cnpj)))
-    return fail('Já existe um cliente com este CNPJ');
-  return adminMutation(['customers'], () => customersService.update(id, { ...data, sectorId: data.sectorId || null }));
+  const result = await adminMutation([], () => updateCustomer(id, parsed.data));
+  if (result.ok) refresh();
+  return result;
 }
 
 export async function deleteCustomer(id: string): Promise<ActionResult<unknown>> {
-  return adminMutation(['customers'], () => customersService.remove(id));
+  const result = await adminMutation([], () => removeCustomer(id));
+  if (result.ok) refresh();
+  return result;
 }
 
 /** Creates a coupon only this customer can use (the e-mail is simulated). */

@@ -1,23 +1,30 @@
 import { z } from 'zod';
 
+const digitCount = (value: string) => value.replace(/\D/g, '').length;
+
 export const customerSchema = z
   .object({
     name: z.string().trim().min(1, 'Nome é obrigatório'),
     email: z.string().trim().min(1, 'Email é obrigatório').pipe(z.email('E-mail inválido')),
     phone: z.string().trim(),
     company: z.string().trim(),
-    document: z.string().trim(),
-    sectorId: z.string(),
+    document: z
+      .string()
+      .trim()
+      .refine((v) => digitCount(v) <= 11, 'CPF inválido'),
     cnpj: z.string().trim(),
     category: z.enum(['individual', 'company', 'public_agency']),
     billingTag: z.enum(['paying', 'account_holder', 'exempt']),
     address: z.string().trim(),
     city: z.string().trim(),
     state: z.string().trim().max(2, 'Use a sigla do estado'),
-    zipCode: z.string().trim(),
+    zipCode: z
+      .string()
+      .trim()
+      .refine((v) => digitCount(v) <= 8, 'CEP inválido'),
     stateRegistration: z.string().trim(),
   })
-  .refine((c) => c.category === 'individual' || c.cnpj !== '', {
+  .refine((c) => c.category === 'individual' || digitCount(c.cnpj) === 14, {
     message: 'CNPJ é obrigatório para esta categoria',
     path: ['cnpj'],
   });

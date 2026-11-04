@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/Button';
 import { withForm } from '@/components/ui/form';
 import { toast } from '@/components/ui/toast';
 import { BILLING_TAG_LABEL, CUSTOMER_CATEGORY_LABEL } from '@/constants/labels';
-import type { Sector } from '@/types/sectors';
 import { passwordLink } from '@/utils/passwordLink';
 import type { CustomerFormValues } from '../schemas/customerSchema';
 
@@ -14,8 +13,7 @@ const options = <K extends string>(labels: Record<K, string>) =>
 
 export const CustomerDataForm = withForm({
   defaultValues: {} as CustomerFormValues,
-  props: {} as { sectors: Sector[] },
-  render: function Render({ form, sectors }) {
+  render: function Render({ form }) {
     const copyLink = () =>
       void navigator.clipboard.writeText(passwordLink()).then(() => toast('Link copiado', undefined, 'success'));
     return (
@@ -25,7 +23,7 @@ export const CustomerDataForm = withForm({
           <form.AppField name="email">{(f) => <f.TextField label="Email" type="email" required />}</form.AppField>
           <form.AppField name="phone">{(f) => <f.TextField label="Telefone" type="tel" />}</form.AppField>
           <form.AppField name="company">{(f) => <f.TextField label="Empresa" />}</form.AppField>
-          <form.AppField name="document">{(f) => <f.TextField label="CNPJ/CPF (documento)" />}</form.AppField>
+          <form.AppField name="document">{(f) => <f.TextField label="CPF" />}</form.AppField>
           <form.AppField name="category">
             {(f) => <f.SelectField label="Categoria" options={options(CUSTOMER_CATEGORY_LABEL)} />}
           </form.AppField>
@@ -42,14 +40,6 @@ export const CustomerDataForm = withForm({
             )
           }
         </form.Subscribe>
-        <form.AppField name="sectorId">
-          {(f) => (
-            <f.SelectField
-              label="Setor"
-              options={[{ value: '', label: '— Nenhum —' }, ...sectors.map((s) => ({ value: s.id, label: s.name }))]}
-            />
-          )}
-        </form.AppField>
         <fieldset className="space-y-3 border-t border-border pt-3">
           <legend className="mt-3 mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
             Dados para faturamento (SAP)

@@ -25,7 +25,7 @@ export async function signIn(values: SignInValues): Promise<{ error: string } | 
   const admin = await checkCredentials(values);
   if (admin === 'unavailable') return { error: UNAVAILABLE };
   if (!admin) return { error: INVALID };
-  await startSession(admin.id);
+  await startSession(admin.id, admin.accessToken);
   redirect('/');
 }
 

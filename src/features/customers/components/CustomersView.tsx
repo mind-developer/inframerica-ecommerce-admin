@@ -9,7 +9,6 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { SearchInput } from '@/components/ui/SearchInput';
 import type { Customer } from '@/types/customers';
 import type { Order } from '@/types/orders';
-import type { Sector } from '@/types/sectors';
 import { deleteCustomer } from '../actions/customerActions';
 import { CustomerModal } from './CustomerModal';
 import { CustomersTable } from './CustomersTable';
@@ -20,15 +19,7 @@ const params = {
   id: parseAsString,
 };
 
-export function CustomersView({
-  customers,
-  sectors,
-  orders,
-}: {
-  customers: Customer[];
-  sectors: Sector[];
-  orders: Order[];
-}) {
+export function CustomersView({ customers, orders }: { customers: Customer[]; orders: Order[] }) {
   // `?id=` opens a customer directly (links from the orders screen).
   const [{ q, tag, id }, setParams] = useQueryStates(params, { history: 'replace' });
   const [removing, setRemoving] = useState<Customer | null>(null);
@@ -36,7 +27,7 @@ export function CustomersView({
   const shown = customers.filter(
     (c) =>
       (!tag || c.billingTag === tag) &&
-      [c.name, c.email, c.company, c.document].some((v) => (v ?? '').toLowerCase().includes(term)),
+      [c.name, c.email, c.company, c.document, c.cnpj].some((v) => (v ?? '').toLowerCase().includes(term)),
   );
   const open = customers.find((c) => c.id === id);
   const tagButton = (value: 'account_holder' | 'exempt', label: string) => (
@@ -55,7 +46,7 @@ export function CustomersView({
         subtitle={`${customers.length} clientes cadastrados`}
         actions={
           <p className="max-w-xs text-right text-xs text-muted-foreground">
-            Clientes são criados automaticamente a partir do cadastro e das compras no site.
+            Clientes são criados automaticamente a partir do cadastro no site.
           </p>
         }
       />
@@ -72,21 +63,10 @@ export function CustomersView({
       {shown.length === 0 ? (
         <EmptyState title="Nenhum cliente encontrado." />
       ) : (
-        <CustomersTable
-          customers={shown}
-          sectors={sectors}
-          onOpen={(c) => void setParams({ id: c.id })}
-          onDelete={setRemoving}
-        />
+        <CustomersTable customers={shown} onOpen={(c) => void setParams({ id: c.id })} onDelete={setRemoving} />
       )}
       {open && (
-        <CustomerModal
-          key={open.id}
-          customer={open}
-          orders={orders}
-          sectors={sectors}
-          onClose={() => void setParams({ id: null })}
-        />
+        <CustomerModal key={open.id} customer={open} orders={orders} onClose={() => void setParams({ id: null })} />
       )}
       <ConfirmActionModal
         target={removing}

@@ -1,17 +1,18 @@
-import { couponsService, customersService } from '@/services/commerce.service';
+import { API_TOKEN_COOKIE } from '@/constants/session';
+import { couponsService } from '@/services/commerce.service';
 import { resetDb } from '@/services/mock/db';
 import { cookieJar } from '@/test/cookieJar';
+import { fakeCustomersApi, installFakeCustomersApi } from '@/test/fakeCustomersApi';
 import { signInAs } from '@/test/session';
 import type { CustomerFormValues } from '../schemas/customerSchema';
-import { createTargetedCoupon, saveCustomer } from './customerActions';
+import { createTargetedCoupon, deleteCustomer, saveCustomer } from './customerActions';
 
 const base: CustomerFormValues = {
   name: 'GOL Linhas Aéreas',
   email: 'rh@voegol.com.br',
   phone: '',
   company: 'GOL',
-  document: '07.575.651/0001-59',
-  sectorId: '',
+  document: '',
   cnpj: '07.575.651/0001-59',
   category: 'company',
   billingTag: 'paying',
@@ -26,23 +27,23 @@ beforeEach(() => {
   resetDb();
   cookieJar.clear();
   signInAs('usr-0');
+  cookieJar.set(API_TOKEN_COOKIE, 'adm-token');
+  installFakeCustomersApi();
 });
+afterEach(() => vi.unstubAllGlobals());
 
 describe('saveCustomer', () => {
-  it('updates and maps an empty sector to null', async () => {
-    expect((await saveCustomer('cli-2', { ...base, city: 'Brasília' })).ok).toBe(true);
-    expect(await customersService.get('cli-2')).toMatchObject({ city: 'Brasília', sectorId: null });
+  it('sends the edit, billing tag included, to the API', async () => {
+    const r = await saveCustomer('cli-2', { ...base, city: 'Brasília', billingTag: 'exempt' });
+    expect(r.ok).toBe(true);
+    expect(fakeCustomersApi.rows.get('cli-2')).toMatchObject({ city: 'Brasília', billingTag: 'exempt' });
   });
 
-  it('rejects e-mails and CNPJs that belong to another customer', async () => {
-    expect(await saveCustomer('cli-2', { ...base, email: 'TREINAMENTO@latam.com' })).toEqual({
-      ok: false,
-      error: 'Já existe um cliente com este email',
-    });
-    expect(await saveCustomer('cli-2', { ...base, cnpj: '02012862000160' })).toEqual({
-      ok: false,
-      error: 'Já existe um cliente com este CNPJ',
-    });
+  it("shows the API's refusal of another customer's e-mail or CNPJ", async () => {
+    fakeCustomersApi.conflict = 'email-taken';
+    expect(await saveCustomer('cli-2', base)).toEqual({ ok: false, error: 'Já existe um cliente com este email' });
+    fakeCustomersApi.conflict = 'cnpj-taken';
+    expect(await saveCustomer('cli-2', base)).toEqual({ ok: false, error: 'Já existe um cliente com este CNPJ' });
   });
 
   it('requires a CNPJ unless the customer is an individual', async () => {
@@ -51,6 +52,18 @@ describe('saveCustomer', () => {
       error: 'CNPJ é obrigatório para esta categoria',
     });
     expect((await saveCustomer('cli-2', { ...base, cnpj: '', category: 'individual' })).ok).toBe(true);
+  });
+
+  it('asks to sign in again when there is no API token', async () => {
+    cookieJar.delete(API_TOKEN_COOKIE);
+    expect(await saveCustomer('cli-2', base)).toEqual({ ok: false, error: 'Sessão expirada. Entre novamente.' });
+  });
+});
+
+describe('deleteCustomer', () => {
+  it('removes the customer on the API', async () => {
+    expect((await deleteCustomer('cli-2')).ok).toBe(true);
+    expect(fakeCustomersApi.rows.has('cli-2')).toBe(false);
   });
 });
 
