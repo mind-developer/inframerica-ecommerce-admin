@@ -92,7 +92,7 @@ export function CustomerModal({
       <div {...tabPanelProps('cliente', tab)}>
         {tab === 'dados' && (
           <form noValidate onSubmit={submitHandler(form)}>
-            <CustomerDataForm form={form} />
+            <CustomerDataForm form={form} customerId={customer.id} email={customer.email} />
           </form>
         )}
         {tab === 'pedidos' && (

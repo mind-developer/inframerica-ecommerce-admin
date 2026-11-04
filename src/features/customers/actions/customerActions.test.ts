@@ -5,7 +5,13 @@ import { cookieJar } from '@/test/cookieJar';
 import { fakeCustomersApi, installFakeCustomersApi } from '@/test/fakeCustomersApi';
 import { signInAs } from '@/test/session';
 import type { CustomerFormValues } from '../schemas/customerSchema';
-import { createTargetedCoupon, deleteCustomer, saveCustomer } from './customerActions';
+import {
+  createTargetedCoupon,
+  deleteCustomer,
+  generatePasswordLink,
+  saveCustomer,
+  sendPasswordEmail,
+} from './customerActions';
 
 const base: CustomerFormValues = {
   name: 'GOL Linhas Aéreas',
@@ -64,6 +70,14 @@ describe('deleteCustomer', () => {
   it('removes the customer on the API', async () => {
     expect((await deleteCustomer('cli-2')).ok).toBe(true);
     expect(fakeCustomersApi.rows.has('cli-2')).toBe(false);
+  });
+});
+
+describe('password links', () => {
+  it('asks the API to mail the link and returns the copyable one', async () => {
+    expect((await sendPasswordEmail('cli-2')).ok).toBe(true);
+    expect(await generatePasswordLink('cli-2')).toEqual({ ok: true, data: 'http://loja/redefinir-senha?token=t' });
+    expect(fakeCustomersApi.calls.some((u) => u.endsWith('/admin/customers/cli-2/password-email'))).toBe(true);
   });
 });
 

@@ -4,9 +4,10 @@ import { Mail, Pencil, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { IconButton } from '@/components/ui/IconButton';
 import { Table, TBody, TD, TH, THead, TR } from '@/components/ui/Table';
-import { toast } from '@/components/ui/toast';
 import { BILLING_TAG_LABEL } from '@/constants/labels';
+import { useServerAction } from '@/components/ui/useServerAction';
 import type { Customer } from '@/types/customers';
+import { sendPasswordEmail } from '../actions/customerActions';
 
 export function CustomersTable({
   customers,
@@ -17,6 +18,7 @@ export function CustomersTable({
   onOpen: (c: Customer) => void;
   onDelete: (c: Customer) => void;
 }) {
+  const { pending, run } = useServerAction();
   return (
     <div className="rounded-xl border border-border bg-card">
       <Table>
@@ -59,9 +61,8 @@ export function CustomersTable({
                 <div className="flex items-center justify-end gap-2">
                   <IconButton
                     label="Reenviar e-mail de definição de senha"
-                    onClick={() =>
-                      toast(`E-mail de definição de senha reenviado para ${c.email}`, undefined, 'success')
-                    }
+                    disabled={pending}
+                    onClick={() => run(() => sendPasswordEmail(c.id), `E-mail enviado para ${c.email}`)}
                   >
                     <Mail aria-hidden className="size-4" />
                   </IconButton>

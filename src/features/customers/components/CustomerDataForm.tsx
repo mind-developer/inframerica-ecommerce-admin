@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/Button';
 import { withForm } from '@/components/ui/form';
 import { toast } from '@/components/ui/toast';
 import { BILLING_TAG_LABEL, CUSTOMER_CATEGORY_LABEL } from '@/constants/labels';
-import { passwordLink } from '@/utils/passwordLink';
+import { useServerAction } from '@/components/ui/useServerAction';
+import { generatePasswordLink, sendPasswordEmail } from '../actions/customerActions';
 import type { CustomerFormValues } from '../schemas/customerSchema';
 
 const options = <K extends string>(labels: Record<K, string>) =>
@@ -13,9 +14,14 @@ const options = <K extends string>(labels: Record<K, string>) =>
 
 export const CustomerDataForm = withForm({
   defaultValues: {} as CustomerFormValues,
-  render: function Render({ form }) {
-    const copyLink = () =>
-      void navigator.clipboard.writeText(passwordLink()).then(() => toast('Link copiado', undefined, 'success'));
+  props: {} as { customerId: string; email: string },
+  render: function Render({ form, customerId, email }) {
+    const { pending, run } = useServerAction();
+    const copyLink = (url: string) =>
+      void navigator.clipboard.writeText(url).then(
+        () => toast('Link copiado. Ele vale por 1 hora.', undefined, 'success'),
+        () => toast('Não foi possível copiar o link.', undefined, 'error'),
+      );
     return (
       <div className="space-y-4">
         <form.AppField name="name">{(f) => <f.TextField label="Nome completo" required />}</form.AppField>
@@ -62,17 +68,17 @@ export const CustomerDataForm = withForm({
             <Button
               variant="outline"
               size="sm"
-              onClick={() =>
-                toast(
-                  `Link de definição de senha reenviado para ${form.getFieldValue('email') || 'o cliente'}`,
-                  undefined,
-                  'success',
-                )
-              }
+              disabled={pending}
+              onClick={() => run(() => sendPasswordEmail(customerId), `E-mail enviado para ${email}`)}
             >
               <KeyRound aria-hidden className="size-3.5" /> Reenviar link para cadastrar senha
             </Button>
-            <Button variant="outline" size="sm" onClick={copyLink}>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={pending}
+              onClick={() => run(() => generatePasswordLink(customerId), undefined, copyLink)}
+            >
               <LinkIcon aria-hidden className="size-3.5" /> Gerar link
             </Button>
           </div>

@@ -20,16 +20,23 @@ export async function listCustomers(): Promise<Customer[]> {
 }
 
 /** Runs a write with the admin's API token; refusals become user-facing errors. */
-async function write(path: string, method: 'PATCH' | 'DELETE', body?: unknown) {
+async function write<T = unknown>(path: string, method: 'PATCH' | 'DELETE' | 'POST', body?: unknown) {
   const token = await getApiToken();
   if (!token) throw new Error(EXPIRED);
-  const r = await apiRequest<{ status?: string }>(path, { method, body, token });
+  const r = await apiRequest<T & { status?: string }>(path, { method, body, token });
   if (r.status === 401) throw new Error(EXPIRED);
   if (r.status === 404) throw new Error('Cliente não encontrado');
   if (r.status >= 400) throw new Error(CONFLICT[r.body?.status ?? ''] ?? 'Dados inválidos');
+  return r.body;
 }
 
-export const updateCustomer = (id: string, values: CustomerInput) =>
-  write(`/admin/customers/${id}`, 'PATCH', values);
+export const updateCustomer = (id: string, values: CustomerInput) => write(`/admin/customers/${id}`, 'PATCH', values);
+
+export const mailPasswordLink = (id: string) => write(`/admin/customers/${id}/password-email`, 'POST');
+
+export async function createPasswordLink(id: string) {
+  const body = await write<{ url: string }>(`/admin/customers/${id}/password-link`, 'POST');
+  return body?.url ?? '';
+}
 
 export const removeCustomer = (id: string) => write(`/admin/customers/${id}`, 'DELETE');
