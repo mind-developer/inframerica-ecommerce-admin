@@ -1,5 +1,4 @@
 /** User-facing domain labels in one place (pt-BR). */
-import type { AdminRole } from '@/types/adminUsers';
 import type { Modality } from '@/types/catalog';
 import type { CohortStatus } from '@/types/cohorts';
 import type { BillingTag, CustomerCategory } from '@/types/customers';
@@ -62,13 +61,6 @@ export const COHORT_STATUS_LABEL: Record<CohortStatus, string> = {
   closed: 'Fechada',
   completed: 'Concluída',
   canceled: 'Cancelada',
-};
-
-export const ADMIN_ROLE_LABEL: Record<AdminRole, string> = {
-  super_admin: 'Super Admin',
-  admin: 'Admin',
-  operator: 'Operador',
-  finance: 'Financeiro',
 };
 
 export const PAYMENT_LINK_STATUS_LABEL: Record<PaymentLinkStatus, string> = {

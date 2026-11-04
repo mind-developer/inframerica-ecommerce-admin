@@ -19,25 +19,25 @@ const fail = (error: string) => ({ ok: false as const, error });
 export async function saveCustomer(id: string, values: CustomerFormValues): Promise<ActionResult<unknown>> {
   const parsed = customerSchema.safeParse(values);
   if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? 'Dados inválidos');
-  const result = await adminMutation([], () => updateCustomer(id, parsed.data));
+  const result = await adminMutation('customers', [], () => updateCustomer(id, parsed.data));
   if (result.ok) refresh();
   return result;
 }
 
 export async function deleteCustomer(id: string): Promise<ActionResult<unknown>> {
-  const result = await adminMutation([], () => removeCustomer(id));
+  const result = await adminMutation('customers', [], () => removeCustomer(id));
   if (result.ok) refresh();
   return result;
 }
 
 /** Mails the customer a real link to create a password (valid for 1 hour). */
 export async function sendPasswordEmail(id: string): Promise<ActionResult<unknown>> {
-  return adminMutation([], () => mailPasswordLink(id));
+  return adminMutation('customers', [], () => mailPasswordLink(id));
 }
 
 /** A link to hand over by another channel; it replaces any link sent before. */
 export async function generatePasswordLink(id: string): Promise<ActionResult<string>> {
-  return adminMutation([], () => createPasswordLink(id));
+  return adminMutation('customers', [], () => createPasswordLink(id));
 }
 
 /** Creates a coupon only this customer can use (the e-mail is simulated). */
@@ -51,6 +51,7 @@ export async function createTargetedCoupon(
   if ((await couponsService.list()).some((c) => c.code === parsed.data.code))
     return fail('Já existe um cupom com este código');
   return adminMutation(
+    'customers',
     ['coupons'],
     () =>
       couponsService.create({

@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { PageSkeleton } from '@/components/ui/PageSkeleton';
-import { requireAdmin } from '@/features/auth/server';
+import { requireScreen } from '@/features/auth/server';
 import { getCourses } from '@/features/courses/server';
 import { CohortPeopleView } from '../components/CohortPeopleView';
 import { CohortsView } from '../components/CohortsView';
@@ -24,13 +24,13 @@ export function CohortPeoplePage({ params }: { params: Promise<{ id: string }> }
 }
 
 async function CohortsContent() {
-  await requireAdmin();
+  await requireScreen('cohorts');
   const [cohorts, courses] = await Promise.all([getCohorts(), getCourses()]);
   return <CohortsView cohorts={cohorts} courses={courses} />;
 }
 
 async function CohortPeopleContent({ params }: { params: Promise<{ id: string }> }) {
-  await requireAdmin();
+  await requireScreen('cohorts');
   const { id } = await params;
   const [cohorts, courses, enrollments, concessionaires] = await Promise.all([
     getCohorts(),

@@ -41,7 +41,7 @@ export function PaymentLinkRow({
         </p>
       </div>
       <div className="flex items-center gap-2">
-        <IconButton label="Copiar link" onClick={copy}>
+        <IconButton label="Copiar link" safeInReadOnly onClick={copy}>
           <Copy aria-hidden className="size-4" />
         </IconButton>
         {l.status === 'draft' && (

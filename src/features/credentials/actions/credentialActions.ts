@@ -10,6 +10,7 @@ export async function saveCredential(id: string | null, values: CredentialFormVa
   const parsed = credentialSchema.safeParse(values);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Dados inválidos' };
   return adminMutation(
+    'credentials',
     ['credentials'],
     () => (id ? credentialsService.update(id, parsed.data) : credentialsService.create(parsed.data)),
     ['credentials'],
@@ -17,5 +18,5 @@ export async function saveCredential(id: string | null, values: CredentialFormVa
 }
 
 export async function deleteCredential(id: string): Promise<ActionResult<unknown>> {
-  return adminMutation(['credentials'], () => credentialsService.remove(id), ['credentials']);
+  return adminMutation('credentials', ['credentials'], () => credentialsService.remove(id), ['credentials']);
 }

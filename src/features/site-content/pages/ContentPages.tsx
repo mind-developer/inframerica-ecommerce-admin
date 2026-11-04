@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { PageSkeleton } from '@/components/ui/PageSkeleton';
-import { requireAdmin } from '@/features/auth/server';
+import { requireScreen } from '@/features/auth/server';
 import { BannersView } from '../components/BannersView';
 import { ContentEditor } from '../components/ContentEditor';
 import { getCachedSiteContent } from '../data/siteContent';
@@ -22,11 +22,11 @@ export function BannersPage() {
 }
 
 async function SiteContentLoader() {
-  await requireAdmin();
+  await requireScreen('content');
   return <ContentEditor content={await getCachedSiteContent()} />;
 }
 
 async function BannersLoader() {
-  await requireAdmin();
+  await requireScreen('banners');
   return <BannersView banners={(await getCachedSiteContent()).banners} />;
 }

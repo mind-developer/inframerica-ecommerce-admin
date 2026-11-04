@@ -1,9 +1,11 @@
-import type { AdminRole } from './adminUsers';
-
-/** The signed-in admin as the UI sees it. */
+/** The signed-in admin as the UI sees it, with what they may do. */
 export interface AdminSessionUser {
   id: string;
   name: string;
   email: string;
-  role: AdminRole;
+  /** No profile: holds every permission. */
+  owner: boolean;
+  profile: { id: string; name: string } | null;
+  /** "resource.action" pairs, e.g. "orders.read". */
+  permissions: string[];
 }

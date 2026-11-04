@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { PageSkeleton } from '@/components/ui/PageSkeleton';
-import { requireAdmin } from '@/features/auth/server';
+import { requireScreen } from '@/features/auth/server';
 import { getCredentials } from '@/features/credentials/server';
 import { getSectors } from '@/features/sectors/server';
 import { CoursesView } from '../components/CoursesView';
@@ -25,13 +25,13 @@ export function CoursePreviewPage({ params }: { params: Promise<{ id: string }> 
 }
 
 async function CoursesContent() {
-  await requireAdmin();
+  await requireScreen('courses');
   const [courses, sectors, credentials] = await Promise.all([getCourses(), getSectors(), getCredentials()]);
   return <CoursesView courses={courses} sectors={sectors} credentials={credentials} />;
 }
 
 async function CoursePreviewContent({ params }: { params: Promise<{ id: string }> }) {
-  await requireAdmin();
+  await requireScreen('courses');
   const { id } = await params;
   const course = (await getCourses()).find((c) => c.id === id);
   if (!course) notFound();

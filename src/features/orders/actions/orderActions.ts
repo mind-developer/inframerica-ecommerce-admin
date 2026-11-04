@@ -39,7 +39,7 @@ export async function cancelOrder(orderId: string, reason: string): Promise<Acti
     isPaid: order.status === 'paid',
   });
   if (blocked) return fail(blocked);
-  return adminMutation(['orders', 'enrollments'], async () => {
+  return adminMutation('orders', ['orders', 'enrollments'], async () => {
     await ordersService.update(orderId, {
       status: 'refunded',
       cancellationReason: reason.trim(),
@@ -65,5 +65,5 @@ export async function setStudentCohort(
     linkedAtIso: enrollment.updatedAt,
   });
   if (blocked) return fail(blocked);
-  return adminMutation(['enrollments'], () => setEnrollmentCohort(enrollmentId, cohortId));
+  return adminMutation('orders', ['enrollments'], () => setEnrollmentCohort(enrollmentId, cohortId));
 }

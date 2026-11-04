@@ -15,8 +15,8 @@ import {
 } from '../schemas/contentSchemas';
 
 /** Every CMS write expires the admin cache and tells the storefront to refresh its pages. */
-const save = (patch: Partial<SiteContent>) =>
-  adminMutation(['site-content'], () => updateSiteContent(patch), ['site-content']);
+const save = (patch: Partial<SiteContent>, resource: 'content' | 'banners' = 'content') =>
+  adminMutation(resource, ['site-content'], () => updateSiteContent(patch), ['site-content']);
 
 const invalid = (issues: { message: string }[]) => ({
   ok: false as const,
@@ -43,7 +43,7 @@ export async function saveAbout(text: string): Promise<ActionResult<SiteContent>
 }
 
 export async function resetContent(): Promise<ActionResult<SiteContent>> {
-  return adminMutation(['site-content'], () => resetSiteContent(), ['site-content']);
+  return adminMutation('content', ['site-content'], () => resetSiteContent(), ['site-content']);
 }
 
 const toBanner = (id: string, { scheduled, startDate, endDate, imageUrl, ...rest }: BannerValues): Banner => ({
@@ -61,15 +61,15 @@ export async function saveBanner(id: string | null, values: BannerValues): Promi
   if (!parsed.success) return invalid(parsed.error.issues);
   const { banners } = await getSiteContent();
   const banner = toBanner(id ?? `ban-${crypto.randomUUID().slice(0, 8)}`, parsed.data);
-  return save({ banners: id ? banners.map((b) => (b.id === id ? banner : b)) : [...banners, banner] });
+  return save({ banners: id ? banners.map((b) => (b.id === id ? banner : b)) : [...banners, banner] }, 'banners');
 }
 
 export async function setBannerActive(id: string, active: boolean): Promise<ActionResult<SiteContent>> {
   const { banners } = await getSiteContent();
-  return save({ banners: banners.map((b) => (b.id === id ? { ...b, active } : b)) });
+  return save({ banners: banners.map((b) => (b.id === id ? { ...b, active } : b)) }, 'banners');
 }
 
 export async function deleteBanner(id: string): Promise<ActionResult<SiteContent>> {
   const { banners } = await getSiteContent();
-  return save({ banners: banners.filter((b) => b.id !== id) });
+  return save({ banners: banners.filter((b) => b.id !== id) }, 'banners');
 }

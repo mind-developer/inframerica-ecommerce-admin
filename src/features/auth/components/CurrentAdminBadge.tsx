@@ -1,4 +1,3 @@
-import { ADMIN_ROLE_LABEL } from '@/constants/labels';
 import { getCurrentAdmin } from '../data/currentAdmin';
 import { SignOutButton } from './SignOutButton';
 
@@ -9,7 +8,7 @@ export async function CurrentAdminBadge() {
   return (
     <div className="ml-auto flex min-w-0 items-center gap-4">
       <span className="truncate text-xs text-muted-foreground">
-        {admin.name} · <span className="tracking-wide uppercase">{ADMIN_ROLE_LABEL[admin.role]}</span>
+        {admin.name} · <span className="tracking-wide uppercase">{admin.profile?.name ?? 'Acesso total'}</span>
       </span>
       <SignOutButton />
     </div>

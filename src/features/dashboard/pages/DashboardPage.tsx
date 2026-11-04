@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { PageSkeleton } from '@/components/ui/PageSkeleton';
-import { requireAdmin } from '@/features/auth/server';
+import { requireScreen } from '@/features/auth/server';
 import { getCourses } from '@/features/courses/server';
 import { getCustomers } from '@/features/customers/server';
 import { getOrders } from '@/features/orders/server';
@@ -20,7 +20,7 @@ export function DashboardPage() {
 }
 
 async function DashboardContent() {
-  await requireAdmin();
+  await requireScreen('dashboard');
   const [orders, customers, courses, sectors] = await Promise.all([
     getOrders(),
     getCustomers(),

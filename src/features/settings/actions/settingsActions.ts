@@ -11,16 +11,16 @@ import { storeSettingsSchema } from '../schemas/storeSettingsSchema';
 export async function saveStoreSettings(patch: Partial<StoreSettings>): Promise<ActionResult<StoreSettings>> {
   const parsed = storeSettingsSchema.partial().safeParse(patch);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Dados inválidos' };
-  return adminMutation(['store-settings'], () => updateStoreSettings(parsed.data), ['store-settings']);
+  return adminMutation('settings', ['store-settings'], () => updateStoreSettings(parsed.data), ['store-settings']);
 }
 
 export async function saveAutoCancelDays(days: number): Promise<ActionResult<OrderSettings>> {
   if (!Number.isInteger(days) || days < 1) return { ok: false, error: 'Informe pelo menos 1 dia' };
-  return adminMutation(['order-settings'], () => updateOrderSettings({ autoCancelDays: days }));
+  return adminMutation('settings', ['order-settings'], () => updateOrderSettings({ autoCancelDays: days }));
 }
 
 /** Mock BI token (no endpoint behind it): a fresh random value. */
 export async function regenerateBiToken(): Promise<ActionResult<OrderSettings>> {
   const token = `sk_live_bi_${crypto.randomUUID().replace(/-/g, '').slice(0, 24)}`;
-  return adminMutation(['order-settings'], () => updateOrderSettings({ biToken: token }));
+  return adminMutation('settings', ['order-settings'], () => updateOrderSettings({ biToken: token }));
 }

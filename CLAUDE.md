@@ -23,7 +23,7 @@ The storefront is a separate app: `../inframerica-ecommerce`. Visual and behavio
 
 `pnpm dev` (port 3001 via `.claude/launch.json`) · `pnpm build` · `pnpm typecheck` · `pnpm lint` · `pnpm format` · `pnpm test` / `pnpm test:watch`
 
-Sign-in needs the API running (`../inframerica-ecommerce-api`, port 3333). Demo admin (API seed): `admin@inframerica.com` / `123456`. **Provisional:** the API checks the e-mail/password, then the panel keeps its own signed session cookie and reads "still active" from the mock admin users. The client uses Microsoft SSO, which replaces this whole flow (`services/adminAuth.service.ts`).
+Sign-in needs the API running (`../inframerica-ecommerce-api`, port 3333). Demo admin (API seed): `admin@inframerica.com` / `123456`. **Provisional:** the API checks the e-mail/password, then the panel keeps its own signed session cookie plus the API token. The client uses Microsoft SSO, which replaces this whole flow (`services/adminAuth.service.ts`).
 
 ## Structure
 
@@ -64,7 +64,7 @@ Enforced by ESLint (`pnpm lint` fails):
 
 ## Hard rules
 
-1. **Every action re-checks the session** (`adminMutation` / `requireAdmin`); the proxy is only an optimistic redirect.
+1. **Every action re-checks the session and the tab's `manage` permission** (`adminMutation(resource, ...)`), every page calls `requireScreen(resource)`; the proxy is only an optimistic redirect. A new tab needs an entry in `constants/access.ts` and in the API's `access/catalog.ts`. On a read-only tab `Button` (accent, destructive, submit) and `IconButton` hide themselves; mark `safeInReadOnly` what changes nothing.
 2. **Enrollment rules are shared:** `domain/enrollmentRules.ts` is identical in both apps (15-day link window, 7-day cancellation, 7 days before an in-person cohort, 3-month credit). Change both copies together, with tests. The UI shows the block reason up front; the action enforces it again.
 3. **Justification is mandatory** for cancelling an order and for linking/unlinking a credit (action-enforced).
 4. **A2 is open:** the admin's `Order`/`Enrollment` model is separate from the customer area's (`AccountOrder`/`Seat`/`Person`). Students are matched to orders by customer name (`domain/orderCourses.ts`) because `Enrollment` has no `customerId` yet.

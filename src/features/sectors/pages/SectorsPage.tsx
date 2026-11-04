@@ -1,7 +1,7 @@
 import { createLoader, type SearchParams } from 'nuqs/server';
 import { Suspense } from 'react';
 import { PageSkeleton } from '@/components/ui/PageSkeleton';
-import { requireAdmin } from '@/features/auth/server';
+import { requireScreen } from '@/features/auth/server';
 import { getCourses } from '@/features/courses/server';
 import { listSectorPage } from '@/services/sectors.service';
 import { SectorsView } from '../components/SectorsView';
@@ -18,7 +18,7 @@ export function SectorsPage({ searchParams }: { searchParams: Promise<SearchPara
 }
 
 async function SectorsContent({ searchParams }: { searchParams: Promise<SearchParams> }) {
-  await requireAdmin();
+  await requireScreen('sectors');
   const params = await loadParams(searchParams);
   const [sectors, courses] = await Promise.all([listSectorPage(params), getCourses()]);
   const courseCountBySector = courses.reduce<Record<string, number>>(

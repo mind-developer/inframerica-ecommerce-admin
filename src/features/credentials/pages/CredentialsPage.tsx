@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { PageSkeleton } from '@/components/ui/PageSkeleton';
-import { requireAdmin } from '@/features/auth/server';
+import { requireScreen } from '@/features/auth/server';
 import { getSectors } from '@/features/sectors/server';
 import { CredentialsView } from '../components/CredentialsView';
 import { getCredentials } from '../data/credentials';
@@ -14,7 +14,7 @@ export function CredentialsPage() {
 }
 
 async function CredentialsContent() {
-  await requireAdmin();
+  await requireScreen('credentials');
   const [credentials, sectors] = await Promise.all([getCredentials(), getSectors()]);
   return <CredentialsView credentials={credentials} sectors={sectors} />;
 }

@@ -24,6 +24,15 @@ vi.mock('next/cache', () => ({
   refresh: vi.fn(),
 }));
 
+// The admin behind a session comes from the API; tests run as the owner by default.
+vi.mock('@/services/adminAuth.service', async (importOriginal) => {
+  const { ownerSession } = await import('./session');
+  return {
+    ...(await importOriginal<typeof import('@/services/adminAuth.service')>()),
+    findCurrentAdmin: vi.fn(async () => ownerSession),
+  };
+});
+
 // jsdom has <dialog> but not its modal API.
 const dialogProto = window.HTMLDialogElement.prototype;
 if (!dialogProto.showModal) {

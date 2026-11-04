@@ -14,7 +14,7 @@ export async function createPaymentLink(
   const parsed = paymentLinkSchema.safeParse(values);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Dados inválidos' };
   const { message: _message, ...rest } = parsed.data;
-  return adminMutation(['payment-links'], () =>
+  return adminMutation('payment_links', ['payment-links'], () =>
     paymentLinksService.create({
       ...rest,
       status: sendNow ? 'sent' : 'draft',
@@ -25,14 +25,14 @@ export async function createPaymentLink(
 }
 
 export async function sendPaymentLink(id: string): Promise<ActionResult<PaymentLink>> {
-  return adminMutation(['payment-links'], () =>
+  return adminMutation('payment_links', ['payment-links'], () =>
     paymentLinksService.update(id, { status: 'sent', sentAt: new Date().toISOString() }),
   );
 }
 
 /** Confirms the payment and registers it as a paid order (PIX), like the prototype. */
 export async function markPaymentLinkPaid(id: string): Promise<ActionResult<PaymentLink>> {
-  return adminMutation(['payment-links', 'orders'], async () => {
+  return adminMutation('payment_links', ['payment-links', 'orders'], async () => {
     const paidAt = new Date().toISOString();
     const link = await paymentLinksService.update(id, { status: 'paid', paidAt });
     if (link.customerId) {
@@ -52,5 +52,5 @@ export async function markPaymentLinkPaid(id: string): Promise<ActionResult<Paym
 }
 
 export async function deletePaymentLink(id: string): Promise<ActionResult<unknown>> {
-  return adminMutation(['payment-links'], () => paymentLinksService.remove(id));
+  return adminMutation('payment_links', ['payment-links'], () => paymentLinksService.remove(id));
 }

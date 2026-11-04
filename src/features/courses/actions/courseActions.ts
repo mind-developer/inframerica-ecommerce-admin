@@ -26,6 +26,7 @@ export async function saveCourse(id: string | null, values: CourseFormValues): P
     sapCode: data.sapCode || undefined,
   };
   return adminMutation(
+    'courses',
     ['courses'],
     async () => ({ id: (id ? await coursesService.update(id, input) : await coursesService.create(input)).id }),
     ['courses'],
@@ -33,5 +34,5 @@ export async function saveCourse(id: string | null, values: CourseFormValues): P
 }
 
 export async function deleteCourse(id: string): Promise<ActionResult<unknown>> {
-  return adminMutation(['courses'], () => coursesService.remove(id), ['courses']);
+  return adminMutation('courses', ['courses'], () => coursesService.remove(id), ['courses']);
 }

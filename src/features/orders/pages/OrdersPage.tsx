@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { PageSkeleton } from '@/components/ui/PageSkeleton';
-import { requireAdmin } from '@/features/auth/server';
+import { requireScreen } from '@/features/auth/server';
 import { getCohorts, getEnrollments } from '@/features/cohorts/server';
 import { getCourses } from '@/features/courses/server';
 import { getCustomers } from '@/features/customers/server';
@@ -18,7 +18,7 @@ export function OrdersPage() {
 }
 
 async function OrdersContent() {
-  await requireAdmin();
+  await requireScreen('orders');
   const [orders, customers, courses, enrollments, cohorts, sectors, settings] = await Promise.all([
     getOrders(),
     getCustomers(),

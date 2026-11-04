@@ -1,5 +1,4 @@
 import 'server-only';
-import type { AdminUser, AdminUserInput } from '@/types/adminUsers';
 import type { Cohort, CohortInput } from '@/types/cohorts';
 import type { Concessionaire } from '@/types/concessionaires';
 import type { Coupon, CouponInput } from '@/types/coupons';
@@ -33,12 +32,6 @@ export const cohortsService = createCrudService<Cohort, CohortInput>(
   () => getDb().cohorts,
   (input) => ({ ...input }),
   'tur',
-);
-
-export const adminUsersService = createCrudService<AdminUser, AdminUserInput>(
-  () => getDb().adminUsers,
-  (input) => ({ ...input, createdAt: nowIso().slice(0, 10) }),
-  'usr',
 );
 
 const PAY_BASE = 'https://pay.inframerica.aero/pay';

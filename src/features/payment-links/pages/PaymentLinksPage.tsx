@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { PageSkeleton } from '@/components/ui/PageSkeleton';
-import { requireAdmin } from '@/features/auth/server';
+import { requireScreen } from '@/features/auth/server';
 import { getCustomers } from '@/features/customers/server';
 import { PaymentLinksView } from '../components/PaymentLinksView';
 import { getPaymentLinks } from '../data/paymentLinks';
@@ -14,7 +14,7 @@ export function PaymentLinksPage() {
 }
 
 async function PaymentLinksContent() {
-  await requireAdmin();
+  await requireScreen('payment_links');
   const [links, customers] = await Promise.all([getPaymentLinks(), getCustomers()]);
   return <PaymentLinksView links={links} customers={customers} />;
 }

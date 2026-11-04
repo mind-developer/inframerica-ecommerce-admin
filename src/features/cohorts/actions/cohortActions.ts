@@ -11,13 +11,13 @@ import { cohortSchema, type CohortFormValues } from '../schemas/cohortSchema';
 export async function saveCohort(id: string | null, values: CohortFormValues): Promise<ActionResult<unknown>> {
   const parsed = cohortSchema.safeParse(values);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Dados inválidos' };
-  return adminMutation(['cohorts'], () =>
+  return adminMutation('cohorts', ['cohorts'], () =>
     id ? cohortsService.update(id, parsed.data) : cohortsService.create(parsed.data),
   );
 }
 
 export async function deleteCohort(id: string): Promise<ActionResult<unknown>> {
-  return adminMutation(['cohorts'], () => cohortsService.remove(id));
+  return adminMutation('cohorts', ['cohorts'], () => cohortsService.remove(id));
 }
 
 export interface CancelOutcome {
@@ -30,7 +30,7 @@ export interface CancelOutcome {
  * credit; without one, each enrollment goes back to a credit with no cohort. The cohort is kept, marked canceled.
  */
 export async function cancelCohort(id: string): Promise<ActionResult<CancelOutcome>> {
-  return adminMutation(['cohorts', 'enrollments'], async () => {
+  return adminMutation('cohorts', ['cohorts', 'enrollments'], async () => {
     const cohorts = await cohortsService.list();
     const cohort = cohorts.find((c) => c.id === id);
     if (!cohort) throw new Error('Turma não encontrada');
@@ -43,9 +43,9 @@ export async function cancelCohort(id: string): Promise<ActionResult<CancelOutco
 }
 
 export async function changeEnrollmentStatus(id: string, status: EnrollmentStatus): Promise<ActionResult<unknown>> {
-  return adminMutation(['enrollments'], () => updateEnrollmentStatus(id, status));
+  return adminMutation('cohorts', ['enrollments'], () => updateEnrollmentStatus(id, status));
 }
 
 export async function unlinkEnrollment(id: string): Promise<ActionResult<unknown>> {
-  return adminMutation(['enrollments'], () => setEnrollmentCohort(id, null));
+  return adminMutation('cohorts', ['enrollments'], () => setEnrollmentCohort(id, null));
 }

@@ -3,27 +3,35 @@
 import { Button } from '@/components/ui/Button';
 import { submitHandler, useAppForm } from '@/components/ui/form';
 import { Modal } from '@/components/ui/Modal';
-import { ADMIN_ROLE_LABEL } from '@/constants/labels';
 import { useServerAction } from '@/components/ui/useServerAction';
-import type { AdminUser } from '@/types/adminUsers';
+import type { AccessProfile, AdminUser } from '@/types/adminUsers';
 import type { Sector } from '@/types/sectors';
 import { saveAdminUser } from '../actions/adminUserActions';
-import { ADMIN_ROLES, adminUserSchema, emptyAdminUser } from '../schemas/adminUserSchema';
+import { adminUserSchema, emptyAdminUser } from '../schemas/adminUserSchema';
+
+const toValues = (user: AdminUser) => ({
+  name: user.name,
+  email: user.email,
+  profileId: user.profile?.id ?? '',
+  sectorId: user.sectorId ?? '',
+  active: user.active,
+  password: '',
+});
 
 export function AdminUserFormModal({
   user,
   sectors,
+  profiles,
   onClose,
 }: {
   user: AdminUser | null;
   sectors: Sector[];
+  profiles: AccessProfile[];
   onClose: () => void;
 }) {
   const { pending, run } = useServerAction();
   const form = useAppForm({
-    defaultValues: user
-      ? { name: user.name, email: user.email, role: user.role, sectorId: user.sectorId ?? '', active: user.active }
-      : emptyAdminUser,
+    defaultValues: user ? toValues(user) : emptyAdminUser,
     validators: { onSubmit: adminUserSchema },
     onSubmit: ({ value }) =>
       run(() => saveAdminUser(user?.id ?? null, value), user ? 'Usuário atualizado' : 'Usuário criado', onClose),
@@ -47,9 +55,23 @@ export function AdminUserFormModal({
       <form noValidate onSubmit={submitHandler(form)} className="space-y-4">
         <form.AppField name="name">{(f) => <f.TextField label="Nome" required />}</form.AppField>
         <form.AppField name="email">{(f) => <f.TextField label="Email" type="email" required />}</form.AppField>
-        <form.AppField name="role">
+        <form.AppField name="password">
           {(f) => (
-            <f.SelectField label="Papel" options={ADMIN_ROLES.map((r) => ({ value: r, label: ADMIN_ROLE_LABEL[r] }))} />
+            <f.TextField
+              label={user ? 'Nova senha (opcional)' : 'Senha provisória'}
+              type="password"
+              autoComplete="new-password"
+              required={!user}
+            />
+          )}
+        </form.AppField>
+        <form.AppField name="profileId">
+          {(f) => (
+            <f.SelectField
+              label="Perfil de acesso"
+              placeholder="Escolha um perfil"
+              options={profiles.map((p) => ({ value: p.id, label: p.name }))}
+            />
           )}
         </form.AppField>
         <form.AppField name="sectorId">

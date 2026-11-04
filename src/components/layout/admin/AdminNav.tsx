@@ -2,7 +2,9 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { screenOf } from '@/constants/access';
 import { cn } from '@/utils/cn';
+import { useAccess } from './AccessProvider';
 import { NAV_ITEMS } from './navItems';
 
 /** Highlights the current section. Reads the URL, so it streams in behind <Suspense>. */
@@ -12,9 +14,11 @@ export function AdminNav({ onNavigate }: { onNavigate?: () => void }) {
 
 /** With `pathname` null (the static shell) nothing is highlighted yet. */
 export function AdminNavLinks({ pathname, onNavigate }: { pathname: string | null; onNavigate?: () => void }) {
+  const { permissions } = useAccess();
+  const allowed = NAV_ITEMS.filter((item) => permissions.includes(`${screenOf(item.href)?.resource}.read`));
   return (
     <nav aria-label="Painel" className="flex-1 space-y-1 overflow-y-auto p-4">
-      {NAV_ITEMS.map(({ href, label, Icon, exact }) => {
+      {allowed.map(({ href, label, Icon, exact }) => {
         const active = pathname !== null && (exact ? pathname === href : pathname.startsWith(href));
         return (
           <Link

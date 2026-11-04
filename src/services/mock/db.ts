@@ -1,6 +1,5 @@
 import 'server-only';
 import { DEFAULT_ORDER_SETTINGS } from '@/mocks/adminCredentials';
-import { adminUsersSeed } from '@/mocks/adminUsers';
 import { cohortsSeed } from '@/mocks/cohorts';
 import { concessionairesSeed } from '@/mocks/concessionaires';
 import { couponsSeed } from '@/mocks/coupons';
@@ -21,7 +20,6 @@ const createDb = () => ({
   coupons: new MockTable(couponsSeed),
   orders: new MockTable(ordersSeed),
   cohorts: new MockTable(cohortsSeed),
-  adminUsers: new MockTable(adminUsersSeed),
   paymentLinks: new MockTable(paymentLinksSeed),
   concessionaires: new MockTable(concessionairesSeed),
   enrollments: new MockTable(enrollmentsSeed),

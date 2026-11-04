@@ -13,11 +13,14 @@ export async function saveCoupon(id: string | null, values: CouponFormValues): P
   const input: CouponInput = { ...rest, validUntil: validUntil || null, customerId: customerId || null };
   const taken = (await couponsService.list()).some((c) => c.code === input.code && c.id !== id);
   if (taken) return { ok: false, error: 'Já existe um cupom com este código' };
-  return adminMutation(['coupons'], () => (id ? couponsService.update(id, input) : couponsService.create(input)), [
+  return adminMutation(
     'coupons',
-  ]);
+    ['coupons'],
+    () => (id ? couponsService.update(id, input) : couponsService.create(input)),
+    ['coupons'],
+  );
 }
 
 export async function deleteCoupon(id: string): Promise<ActionResult<unknown>> {
-  return adminMutation(['coupons'], () => couponsService.remove(id), ['coupons']);
+  return adminMutation('coupons', ['coupons'], () => couponsService.remove(id), ['coupons']);
 }
