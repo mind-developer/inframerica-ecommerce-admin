@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { PUBLIC_SPHERES, STATE_CODES } from '@/constants/brazil';
 
 const digitCount = (value: string) => value.replace(/\D/g, '').length;
 
@@ -17,12 +18,18 @@ export const customerSchema = z
     billingTag: z.enum(['paying', 'account_holder', 'exempt']),
     address: z.string().trim(),
     city: z.string().trim(),
-    state: z.string().trim().max(2, 'Use a sigla do estado'),
+    /** Older accounts may have no state yet. */
+    state: z.union([z.enum(STATE_CODES), z.literal('')], 'Escolha o estado'),
     zipCode: z
       .string()
       .trim()
       .refine((v) => digitCount(v) <= 8, 'CEP inválido'),
     stateRegistration: z.string().trim(),
+    ibgeCode: z
+      .string()
+      .trim()
+      .refine((v) => v === '' || /^\d{7}$/.test(v), 'O código IBGE tem 7 dígitos'),
+    publicSphere: z.union([z.enum(PUBLIC_SPHERES), z.literal('')]),
   })
   .refine((c) => c.category === 'individual' || digitCount(c.cnpj) === 14, {
     message: 'CNPJ é obrigatório para esta categoria',

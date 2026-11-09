@@ -4,18 +4,20 @@ import { KeyRound, Link as LinkIcon } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { withForm } from '@/components/ui/form';
 import { toast } from '@/components/ui/toast';
+import { PUBLIC_SPHERE_LABEL } from '@/constants/brazil';
 import { BILLING_TAG_LABEL, CUSTOMER_CATEGORY_LABEL } from '@/constants/labels';
 import { useServerAction } from '@/components/ui/useServerAction';
 import { generatePasswordLink, sendPasswordEmail } from '../actions/customerActions';
 import type { CustomerFormValues } from '../schemas/customerSchema';
+import { CustomerBillingFields } from './CustomerBillingFields';
 
 const options = <K extends string>(labels: Record<K, string>) =>
   (Object.keys(labels) as K[]).map((value) => ({ value, label: labels[value] }));
 
 export const CustomerDataForm = withForm({
   defaultValues: {} as CustomerFormValues,
-  props: {} as { customerId: string; email: string },
-  render: function Render({ form, customerId, email }) {
+  props: {} as { customerId: string; email: string; termsAcceptedAt: string | null },
+  render: function Render({ form, customerId, email, termsAcceptedAt }) {
     const { pending, run } = useServerAction();
     const copyLink = (url: string) =>
       void navigator.clipboard.writeText(url).then(
@@ -40,26 +42,26 @@ export const CustomerDataForm = withForm({
         <form.Subscribe selector={(s) => s.values.category}>
           {(category) =>
             category !== 'individual' && (
-              <form.AppField name="cnpj">
-                {(f) => <f.TextField label="CNPJ" placeholder="00.000.000/0001-00" />}
-              </form.AppField>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <form.AppField name="cnpj">
+                  {(f) => <f.TextField label="CNPJ" placeholder="00.000.000/0001-00" />}
+                </form.AppField>
+                {category === 'public_agency' && (
+                  <form.AppField name="publicSphere">
+                    {(f) => (
+                      <f.SelectField
+                        label="Esfera do órgão"
+                        placeholder="Selecione"
+                        options={options(PUBLIC_SPHERE_LABEL)}
+                      />
+                    )}
+                  </form.AppField>
+                )}
+              </div>
             )
           }
         </form.Subscribe>
-        <fieldset className="space-y-3 border-t border-border pt-3">
-          <legend className="mt-3 mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-            Dados para faturamento (SAP)
-          </legend>
-          <form.AppField name="address">{(f) => <f.TextField label="Endereço" />}</form.AppField>
-          <div className="grid grid-cols-3 gap-3">
-            <form.AppField name="city">{(f) => <f.TextField label="Cidade" />}</form.AppField>
-            <form.AppField name="state">
-              {(f) => <f.TextField label="Estado" inputClassName="uppercase" />}
-            </form.AppField>
-            <form.AppField name="zipCode">{(f) => <f.TextField label="CEP" />}</form.AppField>
-          </div>
-          <form.AppField name="stateRegistration">{(f) => <f.TextField label="Inscrição estadual" />}</form.AppField>
-        </fieldset>
+        <CustomerBillingFields form={form} termsAcceptedAt={termsAcceptedAt} />
         <div className="border-t border-border pt-3">
           <p className="mt-3 mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
             Senha de acesso

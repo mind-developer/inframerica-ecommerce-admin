@@ -30,9 +30,11 @@ const toValues = (c: Customer): CustomerFormValues => ({
   billingTag: c.billingTag ?? 'paying',
   address: c.address ?? '',
   city: c.city ?? '',
-  state: c.state ?? '',
+  state: (c.state ?? '') as CustomerFormValues['state'],
   zipCode: c.zipCode ?? '',
   stateRegistration: c.stateRegistration ?? '',
+  ibgeCode: c.ibgeCode ?? '',
+  publicSphere: c.publicSphere ?? '',
 });
 
 export function CustomerModal({
@@ -93,7 +95,12 @@ export function CustomerModal({
       <div {...tabPanelProps('cliente', tab)}>
         {tab === 'dados' && (
           <form noValidate onSubmit={submitHandler(form)}>
-            <CustomerDataForm form={form} customerId={customer.id} email={customer.email} />
+            <CustomerDataForm
+              form={form}
+              customerId={customer.id}
+              email={customer.email}
+              termsAcceptedAt={customer.termsAcceptedAt ?? null}
+            />
           </form>
         )}
         {tab === 'pedidos' && (

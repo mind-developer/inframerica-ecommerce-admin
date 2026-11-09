@@ -27,6 +27,8 @@ const base: CustomerFormValues = {
   state: '',
   zipCode: '',
   stateRegistration: '',
+  ibgeCode: '',
+  publicSphere: '',
 };
 
 beforeEach(() => {
@@ -43,6 +45,24 @@ describe('saveCustomer', () => {
     const r = await saveCustomer('cli-2', { ...base, city: 'Brasília', billingTag: 'exempt' });
     expect(r.ok).toBe(true);
     expect(fakeCustomersApi.rows.get('cli-2')).toMatchObject({ city: 'Brasília', billingTag: 'exempt' });
+  });
+
+  it('sends the public agency sphere and the IBGE code, and takes only Brazilian states', async () => {
+    const agency = { ...base, category: 'public_agency' as const, publicSphere: 'state' as const, ibgeCode: '5300108' };
+    expect((await saveCustomer('cli-2', { ...agency, state: 'DF' })).ok).toBe(true);
+    expect(fakeCustomersApi.rows.get('cli-2')).toMatchObject({
+      publicSphere: 'state',
+      ibgeCode: '5300108',
+      state: 'DF',
+    });
+    expect(await saveCustomer('cli-2', { ...agency, state: 'XX' as 'DF' })).toEqual({
+      ok: false,
+      error: 'Escolha o estado',
+    });
+    expect(await saveCustomer('cli-2', { ...agency, ibgeCode: '12' })).toEqual({
+      ok: false,
+      error: 'O código IBGE tem 7 dígitos',
+    });
   });
 
   it("shows the API's refusal of another customer's e-mail or CNPJ", async () => {

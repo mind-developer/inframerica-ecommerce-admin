@@ -1,3 +1,4 @@
+import type { PublicSphere } from '@/constants/brazil';
 import type { Id } from './common';
 
 /** Registration category, needed for SAP invoicing. */
@@ -25,6 +26,12 @@ export interface Customer {
   state?: string;
   zipCode?: string;
   stateRegistration?: string;
+  /** City code from IBGE (7 digits), filled from the CEP. */
+  ibgeCode?: string;
+  /** Government level, only for a public agency. */
+  publicSphere?: PublicSphere | '';
+  /** When the purchase terms were accepted at sign-up; null for accounts created before that. */
+  termsAcceptedAt?: string | null;
 }
 
 export type CustomerInput = Omit<Customer, 'id' | 'createdAt'>;
