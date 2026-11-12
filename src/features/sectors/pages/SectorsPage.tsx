@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { PageSkeleton } from '@/components/ui/PageSkeleton';
 import { requireScreen } from '@/features/auth/server';
 import { getCourses } from '@/features/courses/server';
+import { getCredentials } from '@/features/credentials/server';
 import { listSectorPage } from '@/services/sectors.service';
 import { SectorsView } from '../components/SectorsView';
 import { sectorListParams } from '../utils/sectorListParams';
@@ -20,10 +21,15 @@ export function SectorsPage({ searchParams }: { searchParams: Promise<SearchPara
 async function SectorsContent({ searchParams }: { searchParams: Promise<SearchParams> }) {
   await requireScreen('sectors');
   const params = await loadParams(searchParams);
-  const [sectors, courses] = await Promise.all([listSectorPage(params), getCourses()]);
-  const courseCountBySector = courses.reduce<Record<string, number>>(
-    (acc, c) => ({ ...acc, [c.sectorId]: (acc[c.sectorId] ?? 0) + 1 }),
-    {},
+  const [sectors, courses, credentials] = await Promise.all([listSectorPage(params), getCourses(), getCredentials()]);
+  const linksBySector = Object.fromEntries(
+    sectors.items.map((s) => [
+      s.id,
+      {
+        courses: courses.filter((c) => c.sectorId === s.id).length,
+        credentials: credentials.filter((c) => c.sectorIds.includes(s.id)).length,
+      },
+    ]),
   );
-  return <SectorsView result={sectors} courseCountBySector={courseCountBySector} />;
+  return <SectorsView result={sectors} linksBySector={linksBySector} />;
 }

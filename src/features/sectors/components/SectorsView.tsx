@@ -15,13 +15,16 @@ import { deleteSector } from '../actions/sectorActions';
 import { sectorListParams } from '../utils/sectorListParams';
 import { SectorCard } from './SectorCard';
 import { SectorFormModal } from './SectorFormModal';
+import type { SectorLinks } from '../utils/sectorLinks';
+
+const NO_LINKS: SectorLinks = { courses: 0, credentials: 0 };
 
 export function SectorsView({
   result,
-  courseCountBySector,
+  linksBySector,
 }: {
   result: SectorPage;
-  courseCountBySector: Record<string, number>;
+  linksBySector: Record<string, SectorLinks>;
 }) {
   const [editing, setEditing] = useState<Sector | 'new' | null>(null);
   const [removing, setRemoving] = useState<Sector | null>(null);
@@ -53,16 +56,12 @@ export function SectorsView({
           </Button>
         }
       />
-      <div className="mb-5 flex flex-wrap gap-3">
-        <SearchInput
-          className="min-w-[220px] flex-1"
-          value={q}
-          onChange={(v) => void setParams({ q: v || null, page: null })}
-          placeholder="Buscar por nome ou responsável..."
-        />
-        <StatusButton label="Ativos" pressed={status === 'active'} onToggle={() => setStatus('active')} />
-        <StatusButton label="Inativos" pressed={status === 'inactive'} onToggle={() => setStatus('inactive')} />
-      </div>
+      <SectorFilters
+        q={q}
+        status={status}
+        onSearch={(v) => void setParams({ q: v || null, page: null })}
+        onStatus={setStatus}
+      />
       {sectors.length === 0 ? (
         <EmptyState title={q || status ? 'Nenhum setor encontrado.' : 'Nenhum setor cadastrado.'} />
       ) : (
@@ -71,7 +70,7 @@ export function SectorsView({
             <SectorCard
               key={s.id}
               sector={s}
-              courses={courseCountBySector[s.id] ?? 0}
+              courses={linksBySector[s.id]?.courses ?? 0}
               onEdit={() => setEditing(s)}
               onRemove={() => setRemoving(s)}
             />
@@ -79,7 +78,13 @@ export function SectorsView({
         </ul>
       )}
       <Pagination page={page} pageSize={pageSize} total={total} onChange={(p) => void setParams({ page: p })} />
-      {editing && <SectorFormModal sector={editing === 'new' ? null : editing} onClose={() => setEditing(null)} />}
+      {editing && (
+        <SectorFormModal
+          sector={editing === 'new' ? null : editing}
+          links={(editing !== 'new' && linksBySector[editing.id]) || NO_LINKS}
+          onClose={() => setEditing(null)}
+        />
+      )}
       <ConfirmModal
         open={Boolean(removing)}
         title={`Remover ${removing?.name ?? ''}?`}
@@ -90,6 +95,31 @@ export function SectorsView({
         onConfirm={confirmRemoval}
       />
     </>
+  );
+}
+
+function SectorFilters({
+  q,
+  status,
+  onSearch,
+  onStatus,
+}: {
+  q: string;
+  status: 'active' | 'inactive' | null;
+  onSearch: (value: string) => void;
+  onStatus: (value: 'active' | 'inactive') => void;
+}) {
+  return (
+    <div className="mb-5 flex flex-wrap gap-3">
+      <SearchInput
+        className="min-w-[220px] flex-1"
+        value={q}
+        onChange={onSearch}
+        placeholder="Buscar por nome ou responsável..."
+      />
+      <StatusButton label="Ativos" pressed={status === 'active'} onToggle={() => onStatus('active')} />
+      <StatusButton label="Inativos" pressed={status === 'inactive'} onToggle={() => onStatus('inactive')} />
+    </div>
   );
 }
 
