@@ -4,7 +4,7 @@ import { PageSkeleton } from '@/components/ui/PageSkeleton';
 import { requireScreen } from '@/features/auth/server';
 import { getSectorOrders } from '@/features/orders/server';
 import { CustomersView } from '../components/CustomersView';
-import { listCustomers } from '@/services/customers.service';
+import { getCustomer, listCustomers } from '@/services/customers.service';
 import { customerListParams } from '../utils/customerListParams';
 
 const loadParams = createLoader(customerListParams);
@@ -20,6 +20,8 @@ export function CustomersPage({ searchParams }: { searchParams: Promise<SearchPa
 async function CustomersContent({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const admin = await requireScreen('customers');
   const params = await loadParams(searchParams);
-  const [customers, orders] = await Promise.all([listCustomers(params), getSectorOrders(admin)]);
-  return <CustomersView customers={customers} orders={orders} />;
+  const [result, orders] = await Promise.all([listCustomers(params), getSectorOrders(admin)]);
+  // `?id=` (links from Pedidos) may point to a customer on another page.
+  const opened = params.id ? (result.items.find((c) => c.id === params.id) ?? (await getCustomer(params.id))) : null;
+  return <CustomersView result={result} opened={opened} orders={orders} />;
 }

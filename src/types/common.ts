@@ -9,3 +9,11 @@ export interface RuleResult {
 
 /** What every admin server action returns: the data, or a user-facing error (pt-BR). */
 export type ActionResult<T = void> = { ok: true; data: T } | { ok: false; error: string };
+
+/** One page of a paginated API list (`?page=&pageSize=`). */
+export interface Page<T> {
+  items: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+}

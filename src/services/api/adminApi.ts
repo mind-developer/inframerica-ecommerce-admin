@@ -17,6 +17,17 @@ export async function adminRead<T>(path: string): Promise<T> {
   return r.body;
 }
 
+/** Like `adminRead`, for one record that may be gone: null on 404. */
+export async function adminFind<T>(path: string): Promise<T | null> {
+  const token = await getApiToken();
+  if (!token) redirect('/login');
+  const r = await apiRequest<T>(path, { token });
+  if (r.status === 404) return null;
+  if (r.status === 403) redirect('/sem-acesso');
+  if (r.status === 401 || !r.body) redirect('/login');
+  return r.body;
+}
+
 /** For actions: refusals become user-facing errors, `conflicts` maps the API's 409 statuses. */
 export async function adminWrite<T = unknown>(
   path: string,

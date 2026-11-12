@@ -22,6 +22,17 @@ export function installFakeCustomersApi() {
       const id = String(input).split('/admin/customers/')[1] ?? '';
       if (id.endsWith('/password-email')) return json(204);
       if (id.endsWith('/password-link')) return json(201, { url: 'http://loja/redefinir-senha?token=t' });
+      if (!init?.method || init.method === 'GET') {
+        if (!id)
+          return json(200, {
+            items: [...fakeCustomersApi.rows.values()],
+            total: fakeCustomersApi.rows.size,
+            page: 1,
+            pageSize: 20,
+          });
+        const found = fakeCustomersApi.rows.get(id);
+        return found ? json(200, found) : json(404, { status: 'not-found' });
+      }
       if (init?.method === 'DELETE') return json(fakeCustomersApi.rows.delete(id) ? 204 : 404);
       if (fakeCustomersApi.conflict) return json(409, { status: fakeCustomersApi.conflict });
       const row = { ...fakeCustomersApi.rows.get(id), ...JSON.parse(String(init?.body ?? '{}')) };

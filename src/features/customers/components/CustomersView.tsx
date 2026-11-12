@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/Button';
 import { ConfirmActionModal } from '@/components/ui/ConfirmActionModal';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { Pagination } from '@/components/ui/Pagination';
 import { SearchInput } from '@/components/ui/SearchInput';
+import type { Page } from '@/types/common';
 import type { Customer } from '@/types/customers';
 import type { Order } from '@/types/orders';
 import { deleteCustomer } from '../actions/customerActions';
@@ -14,7 +16,17 @@ import { customerListParams } from '../utils/customerListParams';
 import { CustomerModal } from './CustomerModal';
 import { CustomersTable } from './CustomersTable';
 
-export function CustomersView({ customers, orders }: { customers: Customer[]; orders: Order[] }) {
+export function CustomersView({
+  result,
+  opened,
+  orders,
+}: {
+  result: Page<Customer>;
+  /** The customer `?id=` points to, found by the server even off this page. */
+  opened: Customer | null;
+  orders: Order[];
+}) {
+  const { items: customers, total, page, pageSize } = result;
   // `?id=` opens a customer directly (links from the orders screen).
   // `shallow: false`: search and tag are filtered by the API, each change asks the server again.
   const [{ q, tag, id }, setParams] = useQueryStates(customerListParams, {
@@ -23,12 +35,11 @@ export function CustomersView({ customers, orders }: { customers: Customer[]; or
     throttleMs: 400,
   });
   const [removing, setRemoving] = useState<Customer | null>(null);
-  const open = customers.find((c) => c.id === id);
   const tagButton = (value: 'account_holder' | 'exempt', label: string) => (
     <Button
       variant={tag === value ? 'primary' : 'outline'}
       aria-pressed={tag === value}
-      onClick={() => void setParams({ tag: tag === value ? null : value })}
+      onClick={() => void setParams({ tag: tag === value ? null : value, page: null })}
     >
       {label}
     </Button>
@@ -37,7 +48,7 @@ export function CustomersView({ customers, orders }: { customers: Customer[]; or
     <>
       <PageHeader
         title="Clientes"
-        subtitle={countLabel(customers.length, Boolean(q || tag))}
+        subtitle={countLabel(total, Boolean(q || tag))}
         actions={
           <p className="max-w-xs text-right text-xs text-muted-foreground">
             Clientes são criados automaticamente a partir do cadastro no site.
@@ -48,7 +59,7 @@ export function CustomersView({ customers, orders }: { customers: Customer[]; or
         <SearchInput
           className="min-w-[220px] flex-1"
           value={q}
-          onChange={(v) => void setParams({ q: v || null })}
+          onChange={(v) => void setParams({ q: v || null, page: null })}
           placeholder="Buscar por nome, email, empresa..."
         />
         {tagButton('account_holder', 'Mensalistas')}
@@ -59,8 +70,9 @@ export function CustomersView({ customers, orders }: { customers: Customer[]; or
       ) : (
         <CustomersTable customers={customers} onOpen={(c) => void setParams({ id: c.id })} onDelete={setRemoving} />
       )}
-      {open && (
-        <CustomerModal key={open.id} customer={open} orders={orders} onClose={() => void setParams({ id: null })} />
+      <Pagination page={page} pageSize={pageSize} total={total} onChange={(p) => void setParams({ page: p })} />
+      {opened && id === opened.id && (
+        <CustomerModal key={opened.id} customer={opened} orders={orders} onClose={() => void setParams({ id: null })} />
       )}
       <ConfirmActionModal
         target={removing}
