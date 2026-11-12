@@ -6,6 +6,7 @@ const ADMIN = {
   name: 'Administrador Inframérica',
   email: 'admin@inframerica.com',
   owner: true,
+  sectorId: null,
   profile: null,
   permissions: ['orders.read'],
 };

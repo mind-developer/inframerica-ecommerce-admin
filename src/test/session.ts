@@ -9,6 +9,7 @@ export const ownerSession: AdminSessionUser = {
   name: 'Administrador Inframérica',
   email: 'admin@inframerica.com',
   owner: true,
+  sectorId: null,
   profile: null,
   permissions: SCREENS.flatMap((s) => [`${s.resource}.read`, `${s.resource}.manage`]),
 };

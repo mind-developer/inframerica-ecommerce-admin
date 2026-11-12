@@ -7,7 +7,7 @@ import { getCustomers } from '@/features/customers/server';
 import { getSectors } from '@/features/sectors/server';
 import { getCachedOrderSettings } from '@/features/settings/server';
 import { OrdersView } from '../components/OrdersView';
-import { getOrders } from '../data/orders';
+import { getSectorOrders } from '../data/orders';
 
 export function OrdersPage() {
   return (
@@ -18,9 +18,9 @@ export function OrdersPage() {
 }
 
 async function OrdersContent() {
-  await requireScreen('orders');
+  const admin = await requireScreen('orders');
   const [orders, customers, courses, enrollments, cohorts, sectors, settings] = await Promise.all([
-    getOrders(),
+    getSectorOrders(admin),
     getCustomers(),
     getCourses(),
     getEnrollments(),

@@ -2,9 +2,10 @@ import { coursesSeed } from '@/mocks/courses';
 import { coursesService } from '@/services/catalog.service';
 import { resetDb } from '@/services/mock/db';
 import { cookieJar } from '@/test/cookieJar';
-import { signInAs } from '@/test/session';
+import { findCurrentAdmin } from '@/services/adminAuth.service';
+import { ownerSession, signInAs } from '@/test/session';
 import { emptyCourse, toCourseValues } from '../schemas/courseSchema';
-import { saveCourse } from './courseActions';
+import { deleteCourse, saveCourse } from './courseActions';
 
 beforeEach(() => {
   resetDb();
@@ -47,5 +48,29 @@ describe('saveCourse', () => {
     const course = coursesSeed[0]!;
     expect((await saveCourse(course.id, { ...toCourseValues(course), price: 199 })).ok).toBe(true);
     expect((await coursesService.get(course.id))?.price).toBe(199);
+  });
+});
+
+describe('an admin limited to one sector (#49)', () => {
+  const avsec = coursesSeed.find((c) => c.sectorId === 'set-avsec')!;
+  const other = coursesSeed.find((c) => c.sectorId !== 'set-avsec')!;
+  const denied = { ok: false, error: 'Este curso é de outro setor.' };
+
+  beforeEach(() => {
+    vi.mocked(findCurrentAdmin).mockResolvedValue({ ...ownerSession, owner: false, sectorId: 'set-avsec' });
+  });
+  afterEach(() => vi.mocked(findCurrentAdmin).mockResolvedValue(ownerSession));
+
+  it('edits courses of their sector only, and cannot move one away', async () => {
+    expect((await saveCourse(avsec.id, toCourseValues(avsec))).ok).toBe(true);
+    expect(await saveCourse(other.id, toCourseValues(other))).toEqual(denied);
+    expect(await saveCourse(avsec.id, { ...toCourseValues(avsec), sectorId: other.sectorId })).toEqual(denied);
+    expect(await saveCourse(null, { ...emptyCourse, title: 'Fora', sectorId: other.sectorId })).toEqual(denied);
+  });
+
+  it('removes courses of their sector only', async () => {
+    expect(await deleteCourse(other.id)).toEqual(denied);
+    expect(await coursesService.get(other.id)).not.toBeNull();
+    expect((await deleteCourse(avsec.id)).ok).toBe(true);
   });
 });

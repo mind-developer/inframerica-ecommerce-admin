@@ -2,9 +2,9 @@ import { Suspense } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { PageSkeleton } from '@/components/ui/PageSkeleton';
 import { requireScreen } from '@/features/auth/server';
-import { getCourses } from '@/features/courses/server';
+import { getSectorCourses } from '@/features/courses/server';
 import { getCustomers } from '@/features/customers/server';
-import { getOrders } from '@/features/orders/server';
+import { getSectorOrders } from '@/features/orders/server';
 import { getSectors } from '@/features/sectors/server';
 import { DashboardView } from '../components/DashboardView';
 
@@ -20,11 +20,11 @@ export function DashboardPage() {
 }
 
 async function DashboardContent() {
-  await requireScreen('dashboard');
+  const admin = await requireScreen('dashboard');
   const [orders, customers, courses, sectors] = await Promise.all([
-    getOrders(),
+    getSectorOrders(admin),
     getCustomers(),
-    getCourses(),
+    getSectorCourses(admin),
     getSectors(),
   ]);
   return <DashboardView orders={orders} customers={customers} courses={courses} sectors={sectors} />;
