@@ -21,10 +21,16 @@ export async function requireAdmin(): Promise<AdminSessionUser> {
 export const can = (admin: AdminSessionUser, resource: Resource, action: AccessAction) =>
   admin.permissions.includes(`${resource}.${action}`);
 
-/** A page's guard: without the tab, the admin lands on the first one they may see. */
+/** First tab the admin may open, or null when the profile has none. */
+export const firstScreen = (admin: AdminSessionUser) => SCREENS.find((s) => can(admin, s.resource, 'read')) ?? null;
+
+/**
+ * A page's guard. A tab outside the profile shows "acesso restrito"; the dashboard (where sign-in lands)
+ * opens the first allowed tab instead.
+ */
 export async function requireScreen(resource: Resource): Promise<AdminSessionUser> {
   const admin = await requireAdmin();
   if (can(admin, resource, 'read')) return admin;
-  const first = SCREENS.find((s) => can(admin, s.resource, 'read'));
+  const first = resource === 'dashboard' ? firstScreen(admin) : null;
   redirect(first ? first.href : '/sem-acesso');
 }

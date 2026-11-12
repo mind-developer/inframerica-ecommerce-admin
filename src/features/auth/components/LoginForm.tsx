@@ -1,6 +1,7 @@
 'use client';
 
 import { Lock, Mail, ShieldCheck } from 'lucide-react';
+import { useQueryState } from 'nuqs';
 import { useState } from 'react';
 import { ErrorMessage } from '@/components/ui/Field';
 import { submitHandler, useAppForm } from '@/components/ui/form';
@@ -11,11 +12,12 @@ const DEMO = { email: 'admin@inframerica.com', password: '123456' };
 
 export function LoginForm() {
   const [error, setError] = useState<string | null>(null);
+  const [redirectTo] = useQueryState('redirect');
   const form = useAppForm({
     defaultValues: { email: '', password: '' },
     validators: { onSubmit: signInSchema },
     onSubmit: async ({ value }) => {
-      const r = await signIn(value);
+      const r = await signIn(value, redirectTo);
       if (r) setError(r.error);
     },
   });

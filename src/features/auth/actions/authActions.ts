@@ -1,10 +1,12 @@
 'use server';
 
+import type { Route } from 'next';
 import { redirect } from 'next/navigation';
 import { verifyAdminCredentials } from '@/services/adminAuth.service';
 import { ApiUnavailableError } from '@/services/api/apiClient';
 import { endSession, startSession } from '@/services/session.service';
 import { signInSchema, type SignInValues } from '../schemas/signInSchema';
+import { safeRedirect } from '../utils/safeRedirect';
 
 const INVALID = 'E-mail ou senha inválidos, ou conta sem acesso administrativo ativo';
 
@@ -21,12 +23,13 @@ async function checkCredentials(values: SignInValues) {
   }
 }
 
-export async function signIn(values: SignInValues): Promise<{ error: string } | undefined> {
+/** `redirectTo`: the page the admin was heading to; only paths of this site are followed. */
+export async function signIn(values: SignInValues, redirectTo?: string | null): Promise<{ error: string } | undefined> {
   const admin = await checkCredentials(values);
   if (admin === 'unavailable') return { error: UNAVAILABLE };
   if (!admin) return { error: INVALID };
   await startSession(admin.id, admin.accessToken);
-  redirect('/');
+  redirect(safeRedirect(redirectTo) as Route);
 }
 
 export async function signOut(): Promise<void> {

@@ -23,6 +23,13 @@ describe('admin sign-in (checked by the API)', () => {
     expect(redirect).toHaveBeenCalledWith('/');
   });
 
+  it('returns to the page the admin was heading to, never to another site', async () => {
+    await signIn({ email: 'admin@inframerica.com', password: '123456' }, '/clientes?id=7');
+    expect(redirect).toHaveBeenLastCalledWith('/clientes?id=7');
+    await signIn({ email: 'admin@inframerica.com', password: '123456' }, '//evil.com');
+    expect(redirect).toHaveBeenLastCalledWith('/');
+  });
+
   it('refuses wrong credentials with one generic message', async () => {
     const r = await signIn({ email: 'admin@inframerica.com', password: 'errada' });
     expect(r?.error).toMatch(/E-mail ou senha inválidos/);
