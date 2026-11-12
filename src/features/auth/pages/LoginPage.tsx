@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { LoginForm } from '../components/LoginForm';
 
 export function LoginPage() {
@@ -8,7 +10,10 @@ export function LoginPage() {
         <p className="mb-6 text-xs text-muted-foreground">Painel Administrativo</p>
         <h1 className="mb-1 font-heading text-2xl font-bold">Entrar</h1>
         <p className="mb-6 text-sm text-muted-foreground">Acesso restrito à equipe Inframérica.</p>
-        <LoginForm />
+        {/* The form reads ?redirect= from the URL, which only exists at request time. */}
+        <Suspense fallback={<Skeleton className="h-56 w-full rounded-xl" />}>
+          <LoginForm />
+        </Suspense>
       </div>
     </main>
   );
