@@ -1,6 +1,6 @@
 /** Real customers, from inframerica-ecommerce-api. Orders, coupons and the dashboard still use the mock ones. */
 import 'server-only';
-import type { Customer, CustomerInput } from '@/types/customers';
+import type { Customer, CustomerInput, BillingTag } from '@/types/customers';
 import { adminRead, adminWrite } from './api/adminApi';
 
 const notFound = 'Cliente não encontrado';
@@ -9,7 +9,13 @@ const conflicts = {
   'cnpj-taken': 'Já existe um cliente com este CNPJ',
 };
 
-export const listCustomers = () => adminRead<Customer[]>('/admin/customers');
+/** The Clientes list, filtered by the API like the screen asks (search box and billing tag). */
+export function listCustomers({ q, tag }: { q: string; tag: BillingTag | null }) {
+  const query = new URLSearchParams();
+  if (q) query.set('q', q);
+  if (tag) query.set('tag', tag);
+  return adminRead<Customer[]>(`/admin/customers${query.size ? `?${query}` : ''}`);
+}
 
 export const updateCustomer = (id: string, values: CustomerInput) =>
   adminWrite(`/admin/customers/${id}`, 'PATCH', { body: values, conflicts, notFound });

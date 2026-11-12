@@ -1,6 +1,6 @@
 'use client';
 
-import { parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs';
+import { useQueryStates } from 'nuqs';
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { ConfirmActionModal } from '@/components/ui/ConfirmActionModal';
@@ -10,25 +10,19 @@ import { SearchInput } from '@/components/ui/SearchInput';
 import type { Customer } from '@/types/customers';
 import type { Order } from '@/types/orders';
 import { deleteCustomer } from '../actions/customerActions';
+import { customerListParams } from '../utils/customerListParams';
 import { CustomerModal } from './CustomerModal';
 import { CustomersTable } from './CustomersTable';
 
-const params = {
-  q: parseAsString.withDefault(''),
-  tag: parseAsStringLiteral(['account_holder', 'exempt'] as const),
-  id: parseAsString,
-};
-
 export function CustomersView({ customers, orders }: { customers: Customer[]; orders: Order[] }) {
   // `?id=` opens a customer directly (links from the orders screen).
-  const [{ q, tag, id }, setParams] = useQueryStates(params, { history: 'replace' });
+  // `shallow: false`: search and tag are filtered by the API, each change asks the server again.
+  const [{ q, tag, id }, setParams] = useQueryStates(customerListParams, {
+    history: 'replace',
+    shallow: false,
+    throttleMs: 400,
+  });
   const [removing, setRemoving] = useState<Customer | null>(null);
-  const term = q.toLowerCase();
-  const shown = customers.filter(
-    (c) =>
-      (!tag || c.billingTag === tag) &&
-      [c.name, c.email, c.company, c.document, c.cnpj].some((v) => (v ?? '').toLowerCase().includes(term)),
-  );
   const open = customers.find((c) => c.id === id);
   const tagButton = (value: 'account_holder' | 'exempt', label: string) => (
     <Button
@@ -43,7 +37,7 @@ export function CustomersView({ customers, orders }: { customers: Customer[]; or
     <>
       <PageHeader
         title="Clientes"
-        subtitle={`${customers.length} clientes cadastrados`}
+        subtitle={countLabel(customers.length, Boolean(q || tag))}
         actions={
           <p className="max-w-xs text-right text-xs text-muted-foreground">
             Clientes são criados automaticamente a partir do cadastro no site.
@@ -60,10 +54,10 @@ export function CustomersView({ customers, orders }: { customers: Customer[]; or
         {tagButton('account_holder', 'Mensalistas')}
         {tagButton('exempt', 'Isentos')}
       </div>
-      {shown.length === 0 ? (
+      {customers.length === 0 ? (
         <EmptyState title="Nenhum cliente encontrado." />
       ) : (
-        <CustomersTable customers={shown} onOpen={(c) => void setParams({ id: c.id })} onDelete={setRemoving} />
+        <CustomersTable customers={customers} onOpen={(c) => void setParams({ id: c.id })} onDelete={setRemoving} />
       )}
       {open && (
         <CustomerModal key={open.id} customer={open} orders={orders} onClose={() => void setParams({ id: null })} />
@@ -77,4 +71,11 @@ export function CustomersView({ customers, orders }: { customers: Customer[]; or
       />
     </>
   );
+}
+
+/** "1 cliente cadastrado" / "3 clientes encontrados": found while filtering, registered otherwise. */
+function countLabel(count: number, filtering: boolean) {
+  const noun = count === 1 ? 'cliente' : 'clientes';
+  const verb = filtering ? 'encontrado' : 'cadastrado';
+  return `${count} ${noun} ${count === 1 ? verb : `${verb}s`}`;
 }
