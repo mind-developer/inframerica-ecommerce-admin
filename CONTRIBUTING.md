@@ -28,3 +28,20 @@ Code that fails lint, typecheck or tests doesn't go to `main`.
 - `[TASK-n]` is the card number on the hub (card #49 → `[TASK-49]`). Pushing a commit with it moves the card, so put it first.
 - `type`: `feat`, `fix`, `refactor`, `test`, `docs`, `ci`, `chore`. `scope`: the feature or module (`auth`, `sectors`, `customers`…).
 - One task per commit when possible; the body explains _why_ when the diff doesn't.
+
+## How to contribute
+
+1. **Pick a card** on the hub (Inframerica - Ecommerce board) and read its description and acceptance criteria.
+2. **Write the test first**, then the code. Bugs get a test that fails before the fix.
+3. **Run the gates locally** before pushing (GitHub Actions is paused for now, see `.github/workflows/ci.yml`):
+
+```bash
+pnpm lint && pnpm typecheck && pnpm test && pnpm build
+```
+
+`pnpm build` shares `.next` with `pnpm dev`: stop the dev server before building.
+
+4. **Check it running** when the change shows in the app (`pnpm dev`), not only in tests.
+5. **Commit** with `[TASK-n]` (see Commits above) and push to `main`. Pull requests become mandatory when the branch rules (#36) are agreed.
+
+- Files copied between the storefront and the admin change together, in both repos: `src/domain/enrollmentRules.ts`, `src/domain/coupons.ts` and the UI kit in `src/components/ui`.

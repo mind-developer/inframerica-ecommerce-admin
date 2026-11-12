@@ -12,7 +12,7 @@ cp .env.example .env.local   # optional in development
 pnpm dev --port 3001          # http://localhost:3001
 ```
 
-Demo admin: `admin@inframerica.com` / `123456`. Data is an in-memory mock on the server (reset on restart) until the API exists.
+Sign-in needs the API running ([`inframerica-ecommerce-api`](https://github.com/mind-developer/inframerica-ecommerce-api), `pnpm dev` on port 3333). Demo admin `admin@inframerica.com` / `123456` (API seed). Data not yet in the API is an in-memory mock on the server, reset on restart.
 
 ## Scripts
 
@@ -29,4 +29,4 @@ Demo admin: `admin@inframerica.com` / `123456`. Data is an in-memory mock on the
 
 Next.js 16 · React 19 · TypeScript · Tailwind CSS v4 · shadcn Charts (Recharts) · nuqs · Zustand · Zod · TanStack Form · Vitest + Testing Library.
 
-Architecture and conventions: [`CLAUDE.md`](CLAUDE.md).
+Architecture: [`CLAUDE.md`](CLAUDE.md). Conventions and how to contribute: [`CONTRIBUTING.md`](CONTRIBUTING.md).
