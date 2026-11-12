@@ -1,6 +1,7 @@
 import type { Course } from '@/types/catalog';
 import type { Order } from '@/types/orders';
-import { coursesInSector, ordersInSector, sectorOf } from './sectorScope';
+import type { Cohort } from '@/types/cohorts';
+import { cohortsInSector, coursesInSector, ordersInSector, sectorOf } from './sectorScope';
 
 const course = (id: string, sectorId: string) => ({ id, sectorId }) as Course;
 const order = (id: string, courseIds: string[]) =>
@@ -26,5 +27,16 @@ describe('coursesInSector / ordersInSector', () => {
   it('keeps orders with a course of the sector; orders without courses stay out', () => {
     expect(ordersInSector(orders, courses, 'set-avsec').map((o) => o.id)).toEqual(['o1', 'o3']);
     expect(ordersInSector(orders, courses, null)).toBe(orders);
+  });
+});
+
+describe('cohortsInSector', () => {
+  it('keeps the cohorts of the sector courses', () => {
+    const cohorts = [
+      { id: 't1', courseId: 'avsec' },
+      { id: 't2', courseId: 'ops' },
+    ] as Cohort[];
+    expect(cohortsInSector(cohorts, courses, 'set-avsec').map((c) => c.id)).toEqual(['t1']);
+    expect(cohortsInSector(cohorts, courses, null)).toBe(cohorts);
   });
 });

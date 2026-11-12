@@ -2,7 +2,8 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { PageSkeleton } from '@/components/ui/PageSkeleton';
 import { requireScreen } from '@/features/auth/server';
-import { getCourses } from '@/features/courses/server';
+import { cohortsInSector, sectorOf } from '@/domain/sectorScope';
+import { getSectorCourses } from '@/features/courses/server';
 import { CohortPeopleView } from '../components/CohortPeopleView';
 import { CohortsView } from '../components/CohortsView';
 import { getCohorts, getConcessionaires, getEnrollments } from '../data/cohorts';
@@ -24,21 +25,22 @@ export function CohortPeoplePage({ params }: { params: Promise<{ id: string }> }
 }
 
 async function CohortsContent() {
-  await requireScreen('cohorts');
-  const [cohorts, courses] = await Promise.all([getCohorts(), getCourses()]);
-  return <CohortsView cohorts={cohorts} courses={courses} />;
+  const admin = await requireScreen('cohorts');
+  // Only the sector's courses (#49): the list and the course choices in the form follow them.
+  const [cohorts, courses] = await Promise.all([getCohorts(), getSectorCourses(admin)]);
+  return <CohortsView cohorts={cohortsInSector(cohorts, courses, sectorOf(admin))} courses={courses} />;
 }
 
 async function CohortPeopleContent({ params }: { params: Promise<{ id: string }> }) {
-  await requireScreen('cohorts');
+  const admin = await requireScreen('cohorts');
   const { id } = await params;
   const [cohorts, courses, enrollments, concessionaires] = await Promise.all([
     getCohorts(),
-    getCourses(),
+    getSectorCourses(admin),
     getEnrollments(),
     getConcessionaires(),
   ]);
-  const cohort = cohorts.find((c) => c.id === id);
+  const cohort = cohortsInSector(cohorts, courses, sectorOf(admin)).find((c) => c.id === id);
   if (!cohort) notFound();
   const people = enrollments
     .filter((e) => e.cohortId === id)
