@@ -11,19 +11,21 @@ export function SelectField({
   options,
   placeholder,
   help,
+  required,
   className,
 }: {
   label?: ReactNode;
   options: SelectOption[];
   placeholder?: string;
   help?: ReactNode;
+  required?: boolean;
   className?: string;
 }) {
   const field = useFieldContext<string>();
   const id = `field-${field.name}`;
   const error = field.state.meta.isTouched ? firstError(field.state.meta.errors) : undefined;
   return (
-    <Field id={id} label={label} error={error} help={help} className={className}>
+    <Field id={id} label={label} required={required} error={error} help={help} className={className}>
       <Select
         id={id}
         name={field.name}
@@ -32,6 +34,7 @@ export function SelectField({
         value={field.state.value ?? ''}
         onChange={(e) => field.handleChange(e.target.value)}
         onBlur={field.handleBlur}
+        required={required}
         aria-invalid={Boolean(error)}
         aria-describedby={error ? `${id}-error` : undefined}
       />

@@ -59,6 +59,10 @@ describe('saveCustomer', () => {
       ok: false,
       error: 'Escolha o estado',
     });
+    expect(await saveCustomer('cli-2', { ...agency, publicSphere: '' })).toMatchObject({
+      ok: false,
+      error: 'Informe o tipo do órgão',
+    });
     expect(await saveCustomer('cli-2', { ...agency, ibgeCode: '12' })).toEqual({
       ok: false,
       error: 'O código IBGE tem 7 dígitos',

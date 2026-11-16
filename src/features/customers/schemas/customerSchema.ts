@@ -34,6 +34,10 @@ export const customerSchema = z
   .refine((c) => c.category === 'individual' || digitCount(c.cnpj) === 14, {
     message: 'CNPJ é obrigatório para esta categoria',
     path: ['cnpj'],
+  })
+  .refine((c) => c.category !== 'public_agency' || c.publicSphere !== '', {
+    message: 'Informe o tipo do órgão',
+    path: ['publicSphere'],
   });
 
 export type CustomerFormValues = z.infer<typeof customerSchema>;

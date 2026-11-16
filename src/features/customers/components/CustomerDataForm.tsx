@@ -50,8 +50,9 @@ export const CustomerDataForm = withForm({
                   <form.AppField name="publicSphere">
                     {(f) => (
                       <f.SelectField
-                        label="Esfera do órgão"
+                        label="Tipo do órgão"
                         placeholder="Selecione"
+                        required
                         options={options(PUBLIC_SPHERE_LABEL)}
                       />
                     )}

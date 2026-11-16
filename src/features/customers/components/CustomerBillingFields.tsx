@@ -6,7 +6,7 @@ import { lookupCep } from '@/services/viaCep';
 import { formatDateTime } from '@/utils/format';
 import type { CustomerFormValues } from '../schemas/customerSchema';
 
-/** SAP billing data. The CEP fills city, state and IBGE code from ViaCEP; a typed street is kept. */
+/** SAP billing data. The CEP fills city, state and the hidden IBGE code from ViaCEP; a typed street is kept. */
 export const CustomerBillingFields = withForm({
   defaultValues: {} as CustomerFormValues,
   props: {} as { termsAcceptedAt: string | null },
@@ -34,9 +34,6 @@ export const CustomerBillingFields = withForm({
           <form.AppField name="city">{(f) => <f.TextField label="Cidade" />}</form.AppField>
           <form.AppField name="state">
             {(f) => <f.SelectField label="Estado" placeholder="Selecione" options={STATE_OPTIONS} />}
-          </form.AppField>
-          <form.AppField name="ibgeCode">
-            {(f) => <f.TextField label="Código IBGE" inputMode="numeric" />}
           </form.AppField>
         </div>
         <form.AppField name="stateRegistration">{(f) => <f.TextField label="Inscrição estadual" />}</form.AppField>
