@@ -1,0 +1,35 @@
+# Homologation (hml) on the client's server. Needs the API stack up (inframerica-ecommerce-api/compose.hml.yml),
+# which creates nothing itself: the shared network is created once with `docker network create inframerica`.
+# Config: copy .env.hml.example to .env.hml on the server and fill it in (never commit it).
+#
+#   docker compose -f compose.hml.yml --env-file .env.hml up -d --build
+name: inframerica-admin-hml
+
+services:
+  admin:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_STOREFRONT_URL: ${NEXT_PUBLIC_STOREFRONT_URL:-http://localhost:3000}
+    image: inframerica-admin:hml
+    env_file: .env.hml
+    ports:
+      - '3001:3001'
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://localhost:3001/login').then(r=>process.exit(r.status<500?0:1),()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+networks:
+  default:
+    name: inframerica
+    external: true

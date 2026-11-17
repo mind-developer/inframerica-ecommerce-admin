@@ -25,6 +25,15 @@ Sign-in needs the API running ([`inframerica-ecommerce-api`](https://github.com/
 | `pnpm typecheck`            | Route types + `tsc`                                     |
 | `pnpm format`               | Prettier (with Tailwind class sorting)                  |
 
+## Homologation (Docker)
+
+Bring the API up first (`inframerica-ecommerce-api`, `compose.hml.yml`): it needs the shared `inframerica` Docker network. Then (port 3001):
+
+1. `cp .env.hml.example .env.hml` and fill it in (never commit it).
+2. `docker compose -f compose.hml.yml --env-file .env.hml up -d --build`. The image uses `output: 'standalone'`.
+
+`NEXT_PUBLIC_STOREFRONT_URL` is read at build time: rebuild (`--build`) after changing it.
+
 ## Stack
 
 Next.js 16 · React 19 · TypeScript · Tailwind CSS v4 · shadcn Charts (Recharts) · nuqs · Zustand · Zod · TanStack Form · Vitest + Testing Library.
