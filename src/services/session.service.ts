@@ -8,6 +8,7 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import { cookies } from 'next/headers';
 import { connection } from 'next/server';
 import { API_TOKEN_COOKIE, SESSION_COOKIE } from '@/constants/session';
+import { secureCookies } from '@/utils/secureCookies';
 
 export { SESSION_COOKIE };
 
@@ -50,7 +51,7 @@ export async function startSession(userId: string, apiToken: string): Promise<vo
   const options = {
     httpOnly: true,
     sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    secure: secureCookies(),
     path: '/',
     maxAge: MAX_AGE_SECONDS,
   } as const;

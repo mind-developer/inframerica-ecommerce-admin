@@ -14,7 +14,7 @@ services:
     image: inframerica-admin:hml
     env_file: .env.hml
     ports:
-      - '3001:3001'
+      - '127.0.0.1:3001:3001' # only nginx (same host) and SSH tunnels reach it
     restart: unless-stopped
     healthcheck:
       test:
