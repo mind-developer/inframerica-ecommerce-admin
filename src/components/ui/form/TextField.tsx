@@ -1,6 +1,6 @@
 'use client';
 
-import { Lock, LockOpen, type LucideIcon } from 'lucide-react';
+import { Eye, EyeOff, type LucideIcon } from 'lucide-react';
 import { useState, type HTMLAttributes, type HTMLInputTypeAttribute, type ReactNode } from 'react';
 import { cn } from '@/utils/cn';
 import { firstError } from '@/utils/formErrors';
@@ -20,8 +20,6 @@ export interface TextFieldProps {
   inputClassName?: string;
   className?: string;
   onBlur?: (value: string) => void;
-  /** Password fields only: the lock icon becomes a button that shows the password (open lock while shown). */
-  revealable?: boolean;
 }
 
 export function TextField({
@@ -33,22 +31,18 @@ export function TextField({
   className,
   help,
   required,
-  revealable,
   ...rest
 }: TextFieldProps) {
   const [revealed, setRevealed] = useState(false);
-  const canReveal = revealable && type === 'password';
+  /** Every password field gets an eye button on the right that shows and hides what was typed. */
+  const canReveal = type === 'password';
   const field = useFieldContext<string>();
   const id = `field-${field.name}`;
   const error = field.state.meta.isTouched ? firstError(field.state.meta.errors) : undefined;
   return (
     <Field id={id} label={label} required={required} error={error} help={help} className={className}>
       <div className="relative">
-        {canReveal ? (
-          <RevealButton revealed={revealed} onToggle={() => setRevealed(!revealed)} />
-        ) : (
-          Icon && <Icon aria-hidden className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-        )}
+        {Icon && <Icon aria-hidden className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />}
         <input
           id={id}
           name={field.name}
@@ -63,16 +57,17 @@ export function TextField({
           aria-describedby={error ? `${id}-error` : undefined}
           aria-label={typeof label === 'string' ? undefined : rest.placeholder}
           required={required}
-          className={cn(controlStyles, (Icon || canReveal) && 'pl-10', inputClassName)}
+          className={cn(controlStyles, Icon && 'pl-10', canReveal && 'pr-10', inputClassName)}
           {...rest}
         />
+        {canReveal && <RevealButton revealed={revealed} onToggle={() => setRevealed(!revealed)} />}
       </div>
     </Field>
   );
 }
 
 function RevealButton({ revealed, onToggle }: { revealed: boolean; onToggle: () => void }) {
-  const Icon = revealed ? LockOpen : Lock;
+  const Icon = revealed ? EyeOff : Eye;
   return (
     <button
       type="button"
@@ -80,7 +75,7 @@ function RevealButton({ revealed, onToggle }: { revealed: boolean; onToggle: () 
       onClick={onToggle}
       aria-label={revealed ? 'Ocultar senha' : 'Mostrar senha'}
       aria-pressed={revealed}
-      className="absolute top-1/2 left-1 flex size-8 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+      className="absolute top-1/2 right-1 flex size-8 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
     >
       <Icon aria-hidden className="size-4" />
     </button>
