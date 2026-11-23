@@ -21,7 +21,7 @@ export const CourseBasicTab = withForm({
               {(f) => (
                 <f.TextField
                   label="Slug (URL)"
-                  placeholder="gerado a partir do título"
+                  placeholder="gerado a partir do título (numerado se já existir)"
                   inputClassName="font-mono text-xs"
                   help={`/treinamentos/${slug || '…'}`}
                 />

@@ -5,7 +5,7 @@ import { outsideSector, sectorOutside } from '../data/sectorGuard';
 import { coursesService } from '@/services/courses.service';
 import type { CourseInput } from '@/types/catalog';
 import type { ActionResult } from '@/types/common';
-import { slugify } from '@/utils/slugify';
+import { slugify, uniqueSlug } from '@/utils/slugify';
 import { courseSchema, type CourseFormValues } from '../schemas/courseSchema';
 import { cleanCurriculum, cleanList } from '../utils/courseContent';
 
@@ -20,9 +20,12 @@ export async function saveCourse(id: string | null, values: CourseFormValues): P
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Dados inválidos' };
   const data = parsed.data;
   if ((await sectorOutside(data.sectorId)) || (await outsideSector([id]))) return OTHER_SECTOR;
-  const slug = slugify(data.slug || data.title);
-  if ((await coursesService.list()).some((c) => c.slug === slug && c.id !== id))
-    return { ok: false, error: 'Já existe um curso com este endereço (slug)' };
+  // A typed slug is the admin's choice: taken means an error. One made from the title is numbered (#61).
+  const base = slugify(data.slug || data.title);
+  if (!base) return { ok: false, error: 'O endereço (slug) precisa de letras ou números' };
+  const taken = (await coursesService.list()).filter((c) => c.id !== id).map((c) => c.slug);
+  if (data.slug && taken.includes(base)) return { ok: false, error: 'Já existe um curso com este endereço (slug)' };
+  const slug = data.slug ? base : uniqueSlug(base, taken);
   const content = cleanCurriculum(data.curriculum);
   if ('error' in content) return { ok: false, error: content.error };
   const { curriculum } = content;

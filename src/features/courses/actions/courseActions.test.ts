@@ -64,6 +64,28 @@ describe('saveCourse', () => {
     });
   });
 
+  it('numbers a slug generated from a taken title, but refuses a typed one (#61)', async () => {
+    const taken = coursesSeed[0]!.slug;
+    const generated = await saveCourse(null, {
+      ...emptyCourse,
+      title: taken.replace(/-/g, ' '),
+      sectorId: 'set-avsec',
+    });
+    expect(generated.ok).toBe(true);
+    expect((await coursesService.get(generated.ok ? generated.data.id : ''))?.slug).toBe(`${taken}-2`);
+    expect(await saveCourse(null, { ...emptyCourse, title: 'Outro', slug: taken, sectorId: 'set-avsec' })).toEqual({
+      ok: false,
+      error: 'Já existe um curso com este endereço (slug)',
+    });
+  });
+
+  it('asks for letters or numbers when the slug comes out empty (#61)', async () => {
+    expect(await saveCourse(null, { ...emptyCourse, title: '!!!', sectorId: 'set-avsec' })).toEqual({
+      ok: false,
+      error: 'O endereço (slug) precisa de letras ou números',
+    });
+  });
+
   it('drops blank list items and blank lessons (#57)', async () => {
     const course = coursesSeed[0]!;
     const r = await saveCourse(course.id, {
