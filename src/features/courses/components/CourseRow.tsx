@@ -1,6 +1,7 @@
 import { Eye, GraduationCap, Pencil, Trash2 } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
+import { Fragment } from 'react';
 import { Badge } from '@/components/ui/Badge';
 import { buttonStyles } from '@/components/ui/buttonStyles';
 import { Card } from '@/components/ui/Card';
@@ -20,6 +21,16 @@ export function CourseRow({
   onEdit: () => void;
   onDelete: () => void;
 }) {
+  // Only what is filled in: a blank workload or instructor leaves no stray separator (#58).
+  const meta = [
+    <span key="sector">{sectorName}</span>,
+    c.duration && <span key="duration">{c.duration}</span>,
+    <span key="modules">{c.curriculum.length || c.modules} módulos</span>,
+    <span key="price" className="font-semibold text-foreground">
+      {formatBRL(c.price)}
+    </span>,
+    c.instructor && <span key="instructor">{c.instructor}</span>,
+  ].filter(Boolean);
   return (
     <Card className="flex flex-wrap items-start justify-between gap-4 rounded-xl p-4">
       <div className="flex min-w-0 flex-1 gap-3">
@@ -33,9 +44,16 @@ export function CourseRow({
             {!c.active && <Badge tone="warning">Despublicado</Badge>}
           </div>
           <p className="mt-1 line-clamp-1 text-sm text-muted-foreground">{c.description}</p>
-          <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-            <span>{sectorName}</span>·<span>{c.duration}</span>·<span>{c.curriculum.length || c.modules} módulos</span>·
-            <span className="font-semibold text-foreground">{formatBRL(c.price)}</span>·<span>{c.instructor}</span>
+          <p
+            data-testid="course-meta"
+            className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground"
+          >
+            {meta.map((part, i) => (
+              <Fragment key={i}>
+                {i > 0 && <span aria-hidden> · </span>}
+                {part}
+              </Fragment>
+            ))}
           </p>
         </div>
       </div>

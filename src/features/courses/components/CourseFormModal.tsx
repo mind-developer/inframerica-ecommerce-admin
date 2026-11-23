@@ -55,7 +55,7 @@ export function CourseFormModal({
       size="xl"
       onClose={onClose}
       title={course ? 'Editar Curso' : 'Novo Curso'}
-      description="Todos os campos abaixo aparecem na página pública do curso. Use o Preview para ver o resultado antes de publicar."
+      description="Os campos aparecem na página pública do curso, exceto o instrutor e o código SAP, que são internos. Use o Preview para ver o resultado antes de publicar."
       footer={
         <>
           {course && (

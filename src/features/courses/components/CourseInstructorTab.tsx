@@ -9,6 +9,9 @@ export const CourseInstructorTab = withForm({
   render: function Render({ form }) {
     return (
       <div className="space-y-4">
+        <p className="rounded-lg bg-muted/60 px-3 py-2 text-xs text-muted-foreground">
+          Dados internos: não aparecem na página pública do curso nem no preview.
+        </p>
         <form.AppField name="instructor">
           {(f) => <f.TextField label="Nome" placeholder="Cap. Roberto Alves" />}
         </form.AppField>
