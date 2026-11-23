@@ -1,15 +1,12 @@
 import 'server-only';
 import { cacheLife, cacheTag } from 'next/cache';
 import { CACHE_TAGS } from '@/constants/cacheTags';
-import { cohortsService, listConcessionaires } from '@/services/commerce.service';
+import { cohortsService } from '@/services/cohorts.service';
+import { listConcessionaires } from '@/services/commerce.service';
 import { listEnrollments } from '@/services/enrollments.service';
 
-export async function getCohorts() {
-  'use cache';
-  cacheTag(CACHE_TAGS.cohorts);
-  cacheLife('hours');
-  return cohortsService.list();
-}
+/** Every cohort (#62). Read per request: it needs the admin's API token. */
+export const getCohorts = () => cohortsService.list();
 
 /** Enrollments change from the store (links) and the admin: short cache. */
 export async function getEnrollments() {

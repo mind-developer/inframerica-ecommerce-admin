@@ -8,6 +8,7 @@ const notFound = 'Curso não encontrado';
 const conflicts = {
   'slug-taken': 'Já existe um curso com este endereço (slug)',
   'unknown-sector': 'O setor escolhido não existe mais',
+  'course-in-use': 'Este curso tem turmas. Remova ou mova as turmas antes.',
 };
 
 /** The API takes every text, empty or not. */

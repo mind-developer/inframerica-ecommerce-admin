@@ -1,4 +1,4 @@
-import { cohortsService } from '@/services/commerce.service';
+import { cohortsService } from '@/services/cohorts.service';
 import { listEnrollmentsByCohort } from '@/services/enrollments.service';
 import { getDb, resetDb } from '@/services/mock/db';
 import { cookieJar } from '@/test/cookieJar';

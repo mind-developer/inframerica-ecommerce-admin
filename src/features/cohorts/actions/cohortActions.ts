@@ -3,7 +3,7 @@
 import { findSubstituteCohort } from '@/domain/cohorts';
 import { adminMutation } from '@/features/auth/server';
 import { outsideSector } from '@/features/courses/server';
-import { cohortsService } from '@/services/commerce.service';
+import { cohortsService } from '@/services/cohorts.service';
 import {
   listEnrollments,
   listEnrollmentsByCohort,

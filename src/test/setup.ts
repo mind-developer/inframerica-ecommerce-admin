@@ -35,6 +35,7 @@ vi.mock('@/services/adminAuth.service', async (importOriginal) => {
 
 // Courses come from the API; tests use the mock db's seed instead (courses.service.test.ts tests the real one).
 vi.mock('@/services/courses.service', () => import('./mockCoursesService'));
+vi.mock('@/services/cohorts.service', () => import('./mockCohortsService'));
 
 // jsdom has <dialog> but not its modal API.
 const dialogProto = window.HTMLDialogElement.prototype;
