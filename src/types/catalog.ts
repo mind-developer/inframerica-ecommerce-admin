@@ -34,6 +34,10 @@ export interface Course {
   price: number;
   originalPrice: number | null;
   certificate: boolean;
+  /** Seats one purchase must take at least (#67). */
+  minPerPurchase: number;
+  /** Seats one purchase may take at most; null = no limit (#67). */
+  maxPerPurchase: number | null;
   nextDate: string;
   spotsLeft: number;
   /** Stable public path (`/images/courses/…`), never a bundler-hashed URL. */

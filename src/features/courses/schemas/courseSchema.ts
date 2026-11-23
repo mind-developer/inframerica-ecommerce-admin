@@ -30,6 +30,11 @@ export const courseSchema = z
     rating: z.number().min(0).max(5),
     reviews: z.number().int().min(0),
     certificate: z.boolean(),
+    minPerPurchase: z
+      .number()
+      .int('Use um número inteiro de vagas')
+      .min(1, 'O mínimo por compra é de pelo menos 1 vaga'),
+    maxPerPurchase: z.number().int('Use um número inteiro de vagas').min(1).nullable(),
     modules: z.number().int().min(0),
     learningPoints: z.array(z.string()),
     targetAudience: z.array(z.string()),
@@ -45,6 +50,11 @@ export const courseSchema = z
     // A struck-through price must be above the price, or the "de/por" shows no discount (#68).
     message: 'O preço original precisa ser maior que o preço',
     path: ['originalPrice'],
+  })
+  .refine((c) => c.maxPerPurchase === null || c.maxPerPurchase >= c.minPerPurchase, {
+    // The most seats per purchase can't be under the fewest (#67).
+    message: 'O máximo por compra não pode ser menor que o mínimo',
+    path: ['maxPerPurchase'],
   });
 
 export type CourseFormValues = z.infer<typeof courseSchema>;
@@ -71,6 +81,8 @@ export const emptyCourse: CourseFormValues = {
   rating: 5,
   reviews: 0,
   certificate: true,
+  minPerPurchase: 1,
+  maxPerPurchase: null,
   modules: 0,
   learningPoints: [],
   targetAudience: [],

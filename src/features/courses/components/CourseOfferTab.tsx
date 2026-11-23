@@ -63,6 +63,12 @@ export const CourseOfferTab = withForm({
             {(f) => <f.TextField label="Próxima data" placeholder="12/05/2026" />}
           </form.AppField>
           <form.AppField name="spotsLeft">{(f) => <f.NumberField label="Vagas restantes" min={0} />}</form.AppField>
+          <form.AppField name="minPerPurchase">
+            {(f) => <f.NumberField label="Mínimo de vagas por compra" min={1} />}
+          </form.AppField>
+          <form.AppField name="maxPerPurchase">
+            {(f) => <f.NumberField label="Máximo de vagas por compra" min={1} placeholder="Sem limite" nullable />}
+          </form.AppField>
         </div>
         <form.AppField name="imageUrl">
           {(f) => <f.TextField label="Imagem (URL)" inputClassName="font-mono text-xs" />}

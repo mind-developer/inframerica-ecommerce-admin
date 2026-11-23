@@ -152,6 +152,21 @@ describe('saveCourse', () => {
     expect((await saveCourse(coursesSeed[0]!.id, { ...values, price: 185, originalPrice: null })).ok).toBe(true);
   });
 
+  it('keeps the seats per purchase between a minimum and an optional maximum (#67)', async () => {
+    const course = coursesSeed[0]!;
+    const values = toCourseValues(course);
+    expect((await saveCourse(course.id, { ...values, minPerPurchase: 2, maxPerPurchase: 10 })).ok).toBe(true);
+    expect(await coursesService.get(course.id)).toMatchObject({ minPerPurchase: 2, maxPerPurchase: 10 });
+    expect(await saveCourse(course.id, { ...values, minPerPurchase: 5, maxPerPurchase: 4 })).toEqual({
+      ok: false,
+      error: 'O máximo por compra não pode ser menor que o mínimo',
+    });
+    expect(await saveCourse(course.id, { ...values, minPerPurchase: 0 })).toEqual({
+      ok: false,
+      error: 'O mínimo por compra é de pelo menos 1 vaga',
+    });
+  });
+
   it('edits an existing course keeping its own slug', async () => {
     const course = coursesSeed[0]!;
     expect((await saveCourse(course.id, { ...toCourseValues(course), price: 199 })).ok).toBe(true);
