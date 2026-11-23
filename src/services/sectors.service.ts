@@ -1,4 +1,4 @@
-/** Sectors, from inframerica-ecommerce-api. Mock courses and credentials point to them by id. */
+/** Sectors, from inframerica-ecommerce-api. Courses (API) and mock credentials point to them by id. */
 import 'server-only';
 import type { Sector, SectorInput, SectorPage } from '@/types/sectors';
 import { adminRead, adminWrite } from './api/adminApi';
@@ -20,4 +20,8 @@ export const createSector = (values: SectorInput) =>
 export const updateSector = (id: string, values: SectorInput) =>
   adminWrite(`/admin/sectors/${id}`, 'PATCH', { body: values, conflicts, notFound });
 
-export const removeSector = (id: string) => adminWrite(`/admin/sectors/${id}`, 'DELETE', { notFound });
+export const removeSector = (id: string) =>
+  adminWrite(`/admin/sectors/${id}`, 'DELETE', {
+    notFound,
+    conflicts: { 'sector-in-use': 'Este setor tem cursos ou credenciais vinculados.' },
+  });

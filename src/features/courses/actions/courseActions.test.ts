@@ -1,5 +1,5 @@
 import { coursesSeed } from '@/mocks/courses';
-import { coursesService } from '@/services/catalog.service';
+import { coursesService } from '@/services/courses.service';
 import { resetDb } from '@/services/mock/db';
 import { cookieJar } from '@/test/cookieJar';
 import { findCurrentAdmin } from '@/services/adminAuth.service';

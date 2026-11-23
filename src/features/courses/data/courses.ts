@@ -1,17 +1,10 @@
 import 'server-only';
-import { cacheLife, cacheTag } from 'next/cache';
-import { CACHE_TAGS } from '@/constants/cacheTags';
 import { coursesInSector, sectorOf } from '@/domain/sectorScope';
-import { coursesService } from '@/services/catalog.service';
+import { coursesService } from '@/services/courses.service';
 import type { AdminSessionUser } from '@/types/auth';
 
-/** Every course, published or not (the admin also sees drafts). */
-export async function getCourses() {
-  'use cache';
-  cacheTag(CACHE_TAGS.courses);
-  cacheLife('hours');
-  return coursesService.list();
-}
+/** Every course, published or not (the admin also sees drafts). Read per request: it needs the admin's API token. */
+export const getCourses = () => coursesService.list();
 
 /** The courses this admin may see: only their sector's, unless they see every sector (#49). */
 export async function getSectorCourses(admin: AdminSessionUser) {

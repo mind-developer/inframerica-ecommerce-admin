@@ -1,7 +1,7 @@
 import 'server-only';
 import { sectorOf } from '@/domain/sectorScope';
 import { requireAdmin } from '@/features/auth/server';
-import { coursesService } from '@/services/catalog.service';
+import { coursesService } from '@/services/courses.service';
 
 /**
  * True when the admin is limited to a sector (#49) and any of these courses is outside it.

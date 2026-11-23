@@ -2,7 +2,8 @@
 
 import { refresh } from 'next/cache';
 import { adminMutation } from '@/features/auth/server';
-import { coursesService, credentialsService } from '@/services/catalog.service';
+import { credentialsService } from '@/services/catalog.service';
+import { coursesService } from '@/services/courses.service';
 import { createSector, removeSector, updateSector } from '@/services/sectors.service';
 import type { ActionResult } from '@/types/common';
 import { sectorSchema, type SectorFormValues } from '../schemas/sectorSchema';
@@ -20,7 +21,7 @@ export async function saveSector(id: string | null, values: SectorFormValues): P
   );
 }
 
-/** Courses and credentials still live in the mock, so the link is checked here and not by the API. */
+/** Credentials still live in the mock, so the link is checked here; the API also refuses a sector with courses. */
 export async function deleteSector(id: string): Promise<ActionResult<unknown>> {
   const [courses, credentials] = await Promise.all([coursesService.list(), credentialsService.list()]);
   if (courses.some((c) => c.sectorId === id) || credentials.some((c) => c.sectorIds.includes(id)))

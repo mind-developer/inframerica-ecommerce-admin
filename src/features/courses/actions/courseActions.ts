@@ -2,7 +2,7 @@
 
 import { adminMutation } from '@/features/auth/server';
 import { outsideSector, sectorOutside } from '../data/sectorGuard';
-import { coursesService } from '@/services/catalog.service';
+import { coursesService } from '@/services/courses.service';
 import type { CourseInput } from '@/types/catalog';
 import type { ActionResult } from '@/types/common';
 import { slugify } from '@/utils/slugify';

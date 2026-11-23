@@ -3,7 +3,7 @@
 import { adminCancelBlockReason, adminLinkBlockReason } from '@/domain/enrollmentRules';
 import { studentsOfOrder } from '@/domain/orderCourses';
 import { adminMutation } from '@/features/auth/server';
-import { coursesService } from '@/services/catalog.service';
+import { coursesService } from '@/services/courses.service';
 import { customersService, ordersService } from '@/services/commerce.service';
 import { listEnrollments, setEnrollmentCohort } from '@/services/enrollments.service';
 import type { ActionResult } from '@/types/common';
