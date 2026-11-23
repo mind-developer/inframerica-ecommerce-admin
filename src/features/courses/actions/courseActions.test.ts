@@ -5,7 +5,7 @@ import { cookieJar } from '@/test/cookieJar';
 import { findCurrentAdmin } from '@/services/adminAuth.service';
 import { ownerSession, signInAs } from '@/test/session';
 import { emptyCourse, toCourseValues } from '../schemas/courseSchema';
-import { deleteCourse, saveCourse } from './courseActions';
+import { deleteCourse, saveCourse, setCoursePublished } from './courseActions';
 
 beforeEach(() => {
   resetDb();
@@ -169,5 +169,27 @@ describe('an admin limited to one sector (#49)', () => {
     expect(await deleteCourse(other.id)).toEqual(denied);
     expect(await coursesService.get(other.id)).not.toBeNull();
     expect((await deleteCourse(avsec.id)).ok).toBe(true);
+  });
+});
+
+describe('setCoursePublished (#66)', () => {
+  beforeEach(() => {
+    resetDb();
+    cookieJar.clear();
+    signInAs('usr-0');
+  });
+
+  it('publishes and unpublishes a course', async () => {
+    expect((await setCoursePublished('cur-1', false)).ok).toBe(true);
+    expect((await coursesService.get('cur-1'))?.active).toBe(false);
+    expect((await setCoursePublished('cur-1', true)).ok).toBe(true);
+    expect((await coursesService.get('cur-1'))?.active).toBe(true);
+  });
+
+  it('refuses a course of another sector', async () => {
+    const other = coursesSeed.find((c) => c.sectorId !== 'set-avsec')!;
+    vi.mocked(findCurrentAdmin).mockResolvedValue({ ...ownerSession, owner: false, sectorId: 'set-avsec' });
+    expect(await setCoursePublished(other.id, false)).toEqual({ ok: false, error: 'Este curso é de outro setor.' });
+    vi.mocked(findCurrentAdmin).mockResolvedValue(ownerSession);
   });
 });

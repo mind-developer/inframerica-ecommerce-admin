@@ -42,6 +42,10 @@ export const coursesService = {
   update: async (id: Id, input: CourseInput) =>
     fromApi(await adminWrite<Course>(`/admin/courses/${id}`, 'PATCH', { body: body(input), conflicts, notFound })),
 
+  /** Publish or unpublish without sending the whole course (#66). */
+  setPublished: async (id: Id, active: boolean) =>
+    fromApi(await adminWrite<Course>(`/admin/courses/${id}/published`, 'PATCH', { body: { active }, notFound })),
+
   remove: async (id: Id) => {
     await adminWrite(`/admin/courses/${id}`, 'DELETE', { notFound });
   },

@@ -19,6 +19,7 @@ export const coursesService = {
   get: crud.get,
   create: crud.create,
   update: (id: Id, input: CourseInput) => crud.update(id, { ...input, updatedAt: nowIso() } as Partial<CourseInput>),
+  setPublished: (id: Id, active: boolean) => crud.update(id, { active, updatedAt: nowIso() } as Partial<CourseInput>),
   remove: async (id: Id) => {
     await crud.remove(id);
   },

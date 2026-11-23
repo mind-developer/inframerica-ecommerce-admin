@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/Badge';
 import { buttonStyles } from '@/components/ui/buttonStyles';
 import { Card } from '@/components/ui/Card';
 import { IconButton } from '@/components/ui/IconButton';
+import { useReadOnly } from '@/components/ui/ReadOnly';
+import { Switch } from '@/components/ui/Switch';
 import { MODALITY_LABEL } from '@/constants/labels';
 import type { Course } from '@/types/catalog';
 import { formatBRL } from '@/utils/format';
@@ -15,12 +17,18 @@ export function CourseRow({
   sectorName,
   onEdit,
   onDelete,
+  onPublish,
+  publishing = false,
 }: {
   course: Course;
   sectorName: string;
   onEdit: () => void;
   onDelete: () => void;
+  /** Publish (true) or unpublish (false) from the list (#66). */
+  onPublish: (active: boolean) => void;
+  publishing?: boolean;
 }) {
+  const readOnly = useReadOnly();
   // Only what is filled in: a blank workload or instructor leaves no stray separator (#58).
   const meta = [
     <span key="sector">{sectorName}</span>,
@@ -57,7 +65,18 @@ export function CourseRow({
           </p>
         </div>
       </div>
-      <div className="flex gap-2">
+      <div className="flex items-center gap-2">
+        {!readOnly && (
+          <label className="mr-1 flex items-center gap-2 text-xs text-muted-foreground">
+            <Switch
+              checked={c.active}
+              disabled={publishing}
+              onCheckedChange={onPublish}
+              aria-label={`Publicar ${c.title}`}
+            />
+            Publicado
+          </label>
+        )}
         <Link href={`/cursos/${c.id}/preview` as Route} className={buttonStyles({ variant: 'outline', size: 'sm' })}>
           <Eye aria-hidden className="size-4" /> Preview
         </Link>

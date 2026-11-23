@@ -1,21 +1,27 @@
 'use client';
 
 import { Plus } from 'lucide-react';
-import { parseAsString, useQueryStates } from 'nuqs';
+import { parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs';
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { ConfirmActionModal } from '@/components/ui/ConfirmActionModal';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { SearchInput } from '@/components/ui/SearchInput';
 import type { Course, Credential } from '@/types/catalog';
 import type { Sector } from '@/types/sectors';
 import { deleteCourse } from '../actions/courseActions';
+import { useCoursePublish } from '../hooks/useCoursePublish';
+import { COURSE_STATUSES, filterCourses } from '../utils/courseFilters';
+import { CourseFilters } from './CourseFilters';
 import { CourseFormModal } from './CourseFormModal';
 import { CourseRow } from './CourseRow';
 
 /** `?editar=<id>` opens the editor (the preview's "Editar" button links here). */
-const params = { q: parseAsString.withDefault(''), editar: parseAsString };
+const params = {
+  q: parseAsString.withDefault(''),
+  status: parseAsStringLiteral(COURSE_STATUSES),
+  editar: parseAsString,
+};
 
 export function CoursesView({
   courses,
@@ -26,13 +32,12 @@ export function CoursesView({
   sectors: Sector[];
   credentials: Credential[];
 }) {
-  const [{ q, editar }, setParams] = useQueryStates(params, { history: 'replace' });
+  const [{ q, status, editar }, setParams] = useQueryStates(params, { history: 'replace' });
+  const { publish, publishing } = useCoursePublish();
   const [creating, setCreating] = useState(false);
   const [removing, setRemoving] = useState<Course | null>(null);
-  const term = q.trim().toLowerCase();
-  const shown = term
-    ? courses.filter((c) => [c.title, c.category, c.instructor].some((t) => t.toLowerCase().includes(term)))
-    : courses;
+  const shown = filterCourses(courses, q, status);
+  const filtering = Boolean(q.trim() || status);
   const editing = courses.find((c) => c.id === editar) ?? null;
   const sectorName = (id: string) => sectors.find((s) => s.id === id)?.name ?? '—';
   return (
@@ -47,14 +52,14 @@ export function CoursesView({
           </Button>
         }
       />
-      <SearchInput
-        className="mb-5 max-w-md"
-        value={q}
-        onChange={(v) => void setParams({ q: v || null })}
-        placeholder="Buscar por título, categoria ou instrutor"
+      <CourseFilters
+        q={q}
+        status={status}
+        onSearch={(v) => void setParams({ q: v || null })}
+        onStatus={(v) => void setParams({ status: status === v ? null : v })}
       />
       {shown.length === 0 ? (
-        <EmptyState title={term ? 'Nenhum curso corresponde à busca.' : 'Nenhum curso cadastrado.'} />
+        <EmptyState title={filtering ? 'Nenhum curso encontrado.' : 'Nenhum curso cadastrado.'} />
       ) : (
         <ul className="space-y-3">
           {shown.map((c) => (
@@ -64,6 +69,8 @@ export function CoursesView({
               sectorName={sectorName(c.sectorId)}
               onEdit={() => void setParams({ editar: c.id })}
               onDelete={() => setRemoving(c)}
+              onPublish={(active) => publish(c, active)}
+              publishing={publishing}
             />
           ))}
         </ul>

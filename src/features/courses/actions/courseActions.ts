@@ -53,3 +53,9 @@ export async function deleteCourse(id: string): Promise<ActionResult<unknown>> {
   if (await outsideSector([id])) return OTHER_SECTOR;
   return adminMutation('courses', ['courses'], () => coursesService.remove(id), ['courses']);
 }
+
+/** Publish or unpublish from the list (#66). The storefront is told to refresh its catalog. */
+export async function setCoursePublished(id: string, active: boolean): Promise<ActionResult<unknown>> {
+  if (await outsideSector([id])) return OTHER_SECTOR;
+  return adminMutation('courses', ['courses'], () => coursesService.setPublished(id, active), ['courses']);
+}
