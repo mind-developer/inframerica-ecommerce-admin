@@ -64,6 +64,61 @@ describe('saveCourse', () => {
     });
   });
 
+  it('drops blank list items and blank lessons (#57)', async () => {
+    const course = coursesSeed[0]!;
+    const r = await saveCourse(course.id, {
+      ...toCourseValues(course),
+      learningPoints: ['  A  ', '', '   '],
+      targetAudience: [' '],
+      prerequisites: ['B'],
+      curriculum: [
+        {
+          title: ' M1 ',
+          lessons: [
+            { title: ' L1 ', duration: ' 1h ', free: true },
+            { title: ' ', duration: '' },
+          ],
+        },
+        { title: '', lessons: [{ title: '', duration: ' ' }] },
+      ],
+    });
+    expect(r.ok).toBe(true);
+    expect(await coursesService.get(course.id)).toMatchObject({
+      learningPoints: ['A'],
+      targetAudience: [],
+      prerequisites: ['B'],
+      curriculum: [{ title: 'M1', lessons: [{ title: 'L1', duration: '1h', free: true }] }],
+      modules: 1,
+    });
+  });
+
+  it('names the module or lesson that has content but no title (#57)', async () => {
+    const values = toCourseValues(coursesSeed[0]!);
+    expect(
+      await saveCourse(coursesSeed[0]!.id, {
+        ...values,
+        curriculum: [{ title: '', lessons: [{ title: 'L', duration: '' }] }],
+      }),
+    ).toEqual({
+      ok: false,
+      error: 'Informe o título do módulo 1',
+    });
+    expect(
+      await saveCourse(coursesSeed[0]!.id, {
+        ...values,
+        curriculum: [
+          {
+            title: 'M',
+            lessons: [
+              { title: 'L', duration: '' },
+              { title: '', duration: '30m' },
+            ],
+          },
+        ],
+      }),
+    ).toEqual({ ok: false, error: 'Informe o título da aula 2 do módulo 1' });
+  });
+
   it('edits an existing course keeping its own slug', async () => {
     const course = coursesSeed[0]!;
     expect((await saveCourse(course.id, { ...toCourseValues(course), price: 199 })).ok).toBe(true);

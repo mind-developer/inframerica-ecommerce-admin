@@ -7,6 +7,7 @@ import type { CourseInput } from '@/types/catalog';
 import type { ActionResult } from '@/types/common';
 import { slugify } from '@/utils/slugify';
 import { courseSchema, type CourseFormValues } from '../schemas/courseSchema';
+import { cleanCurriculum, cleanList } from '../utils/courseContent';
 
 const OTHER_SECTOR = { ok: false as const, error: 'Este curso é de outro setor.' };
 
@@ -22,10 +23,17 @@ export async function saveCourse(id: string | null, values: CourseFormValues): P
   const slug = slugify(data.slug || data.title);
   if ((await coursesService.list()).some((c) => c.slug === slug && c.id !== id))
     return { ok: false, error: 'Já existe um curso com este endereço (slug)' };
+  const content = cleanCurriculum(data.curriculum);
+  if ('error' in content) return { ok: false, error: content.error };
+  const { curriculum } = content;
   const input: CourseInput = {
     ...data,
     slug,
-    modules: data.curriculum.length > 0 ? data.curriculum.length : data.modules,
+    learningPoints: cleanList(data.learningPoints),
+    targetAudience: cleanList(data.targetAudience),
+    prerequisites: cleanList(data.prerequisites),
+    curriculum,
+    modules: curriculum.length > 0 ? curriculum.length : data.modules,
     // An online course has no place: the field is hidden, so an old value must not stay behind (#56).
     defaultLocation: (data.modality !== 'online' && data.defaultLocation) || undefined,
     sapCode: data.sapCode || undefined,
