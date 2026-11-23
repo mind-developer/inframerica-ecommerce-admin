@@ -50,6 +50,7 @@ export function CourseRow({
             <h2 className="font-semibold">{c.title}</h2>
             <Badge>{MODALITY_LABEL[c.modality]}</Badge>
             {!c.active && <Badge tone="warning">Despublicado</Badge>}
+            {c.spotsLeft <= 0 && <Badge tone="warning">Esgotado</Badge>}
           </div>
           <p className="mt-1 line-clamp-1 text-sm text-muted-foreground">{c.description}</p>
           <p

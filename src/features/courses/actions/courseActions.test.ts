@@ -141,6 +141,17 @@ describe('saveCourse', () => {
     ).toEqual({ ok: false, error: 'Informe o título da aula 2 do módulo 1' });
   });
 
+  it('takes an original price only above the price (#68)', async () => {
+    const values = toCourseValues(coursesSeed[0]!);
+    for (const originalPrice of [150, 185])
+      expect(await saveCourse(coursesSeed[0]!.id, { ...values, price: 185, originalPrice })).toEqual({
+        ok: false,
+        error: 'O preço original precisa ser maior que o preço',
+      });
+    expect((await saveCourse(coursesSeed[0]!.id, { ...values, price: 185, originalPrice: 220 })).ok).toBe(true);
+    expect((await saveCourse(coursesSeed[0]!.id, { ...values, price: 185, originalPrice: null })).ok).toBe(true);
+  });
+
   it('edits an existing course keeping its own slug', async () => {
     const course = coursesSeed[0]!;
     expect((await saveCourse(course.id, { ...toCourseValues(course), price: 199 })).ok).toBe(true);

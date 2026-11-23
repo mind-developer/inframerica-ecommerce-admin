@@ -35,4 +35,9 @@ describe('CourseRow', () => {
     await userEvent.click(toggle);
     expect(onPublish).toHaveBeenCalledWith(true);
   });
+
+  it('marks a course with no seats left as sold out (#68)', () => {
+    row({ spotsLeft: 0 });
+    expect(screen.getByText('Esgotado')).toBeInTheDocument();
+  });
 });
