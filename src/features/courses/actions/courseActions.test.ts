@@ -44,6 +44,26 @@ describe('saveCourse', () => {
     ).toEqual({ ok: false, error: 'Já existe um curso com este endereço (slug)' });
   });
 
+  it('drops the default location of an online course (#56)', async () => {
+    const course = coursesSeed.find((c) => c.modality === 'online')!;
+    const values = { ...toCourseValues(course), defaultLocation: 'Sala antiga' };
+    expect((await saveCourse(course.id, values)).ok).toBe(true);
+    expect((await coursesService.get(course.id))?.defaultLocation).toBeUndefined();
+    await saveCourse(course.id, { ...values, modality: 'hybrid' });
+    expect((await coursesService.get(course.id))?.defaultLocation).toBe('Sala antiga');
+  });
+
+  it('takes an image path of the site or an http(s) address (#56)', async () => {
+    const values = toCourseValues(coursesSeed[0]!);
+    for (const imageUrl of ['/images/x.webp', 'https://cdn.exemplo.com/x.png', ''])
+      expect((await saveCourse(coursesSeed[0]!.id, { ...values, imageUrl })).ok).toBe(true);
+    expect((await saveCourse(coursesSeed[0]!.id, { ...values, imageUrl: '//outro.com/x.png' })).ok).toBe(false);
+    expect(await saveCourse(coursesSeed[0]!.id, { ...values, imageUrl: 'imagem.png' })).toEqual({
+      ok: false,
+      error: 'Use um caminho do site (/images/…) ou um endereço http(s)',
+    });
+  });
+
   it('edits an existing course keeping its own slug', async () => {
     const course = coursesSeed[0]!;
     expect((await saveCourse(course.id, { ...toCourseValues(course), price: 199 })).ok).toBe(true);

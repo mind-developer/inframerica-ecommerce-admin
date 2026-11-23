@@ -1,6 +1,10 @@
 import { z } from 'zod';
 import type { Course } from '@/types/catalog';
 
+/** A path of the site (`/images/…`) or an http(s) address; empty falls back to the placeholder. */
+export const isImageUrl = (value: string) =>
+  value === '' || (value.startsWith('/') && !value.startsWith('//')) || /^https?:\/\/\S+$/.test(value);
+
 const lesson = z.object({ title: z.string(), duration: z.string(), free: z.boolean().optional() });
 
 export const courseSchema = z.object({
@@ -20,7 +24,7 @@ export const courseSchema = z.object({
   originalPrice: z.number().min(0).nullable(),
   nextDate: z.string().trim(),
   spotsLeft: z.number().int().min(0),
-  imageUrl: z.string().trim(),
+  imageUrl: z.string().trim().refine(isImageUrl, 'Use um caminho do site (/images/…) ou um endereço http(s)'),
   students: z.number().int().min(0),
   rating: z.number().min(0).max(5),
   reviews: z.number().int().min(0),

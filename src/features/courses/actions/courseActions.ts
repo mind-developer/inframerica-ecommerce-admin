@@ -26,7 +26,8 @@ export async function saveCourse(id: string | null, values: CourseFormValues): P
     ...data,
     slug,
     modules: data.curriculum.length > 0 ? data.curriculum.length : data.modules,
-    defaultLocation: data.defaultLocation || undefined,
+    // An online course has no place: the field is hidden, so an old value must not stay behind (#56).
+    defaultLocation: (data.modality !== 'online' && data.defaultLocation) || undefined,
     sapCode: data.sapCode || undefined,
   };
   return adminMutation(
