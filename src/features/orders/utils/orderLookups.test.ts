@@ -47,6 +47,19 @@ describe('buildOrderLookups', () => {
     expect(lookups.cohortsOfCourse('k1').map((t) => t.id)).toEqual(['t1', 't2']);
   });
 
+  it('leaves full cohorts out (#64)', () => {
+    const full = { ...cohort('t5', 'k1', '2026-11-01'), totalSeats: 2, takenSeats: 2 };
+    const free = { ...cohort('t6', 'k1', '2026-11-02'), totalSeats: 2, takenSeats: 1 };
+    const { cohortsOfCourse } = buildOrderLookups({
+      customers: [],
+      courses: [],
+      enrollments: [],
+      cohorts: [full, free],
+      sectors: [],
+    });
+    expect(cohortsOfCourse('k1').map((t) => t.id)).toEqual(['t6']);
+  });
+
   it('names sectors, with a dash for none', () => {
     expect(lookups.sectorName('s1')).toBe('Aviação');
     expect(lookups.sectorName(null)).toBe('—');

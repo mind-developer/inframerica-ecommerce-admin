@@ -23,7 +23,7 @@ export function CancelCohortModal({
   const message = substitute ? (
     <span className="space-y-3">
       <span className="block">
-        Encontramos uma turma substituta do mesmo curso com vaga disponível. Ao confirmar, todos os participantes desta
+        Encontramos uma turma substituta do mesmo curso com vagas para todos. Ao confirmar, todos os participantes desta
         turma serão movidos para ela, preservando o crédito já utilizado, e a turma atual será marcada como cancelada.
       </span>
       <span className="block rounded-lg border border-border p-3 text-foreground">
@@ -34,7 +34,7 @@ export function CancelCohortModal({
       </span>
     </span>
   ) : (
-    'Não há outra turma aberta com vaga livre para este curso. Ao confirmar, um e-mail de cancelamento será enviado a cada participante, as matrículas voltarão a ter crédito disponível (sem turma vinculada) e o cliente será avisado da devolução do crédito. A turma ficará marcada como cancelada, mas não será excluída.'
+    'Não há outra turma aberta deste curso com vagas para todos os participantes. Ao confirmar, um e-mail de cancelamento será enviado a cada participante, as matrículas voltarão a ter crédito disponível (sem turma vinculada) e o cliente será avisado da devolução do crédito. A turma ficará marcada como cancelada, mas não será excluída.'
   );
   const confirm = () =>
     cohort &&

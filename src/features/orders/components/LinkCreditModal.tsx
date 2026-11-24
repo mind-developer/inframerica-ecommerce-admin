@@ -14,7 +14,7 @@ import { setStudentCohort } from '../actions/orderActions';
 
 export interface LinkTarget {
   student: Enrollment;
-  /** null = unlink. */
+  /** null = unlink; '' = link, but no cohort has a free seat. */
   cohortId: string | null;
 }
 
@@ -62,7 +62,7 @@ export function LinkCreditModal({ target, cohorts, customerEmail, onClose }: Pro
         {linking && (
           <Field id="link-cohort" label="Turma">
             {cohorts.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Nenhuma turma aberta para este curso.</p>
+              <p className="text-sm text-muted-foreground">Nenhuma turma com vaga livre para este curso.</p>
             ) : (
               <Select
                 id="link-cohort"

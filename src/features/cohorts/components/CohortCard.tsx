@@ -6,6 +6,7 @@ import { buttonStyles } from '@/components/ui/buttonStyles';
 import { Card } from '@/components/ui/Card';
 import { IconButton } from '@/components/ui/IconButton';
 import { COHORT_STATUS_LABEL } from '@/constants/labels';
+import { cohortStatus, isFull } from '@/domain/cohorts';
 import type { Cohort, CohortStatus } from '@/types/cohorts';
 import { formatDate } from '@/utils/format';
 
@@ -29,12 +30,14 @@ export function CohortCard({
   onCancel: () => void;
   onDelete: () => void;
 }) {
+  const status = cohortStatus(t);
   return (
     <Card className="flex flex-wrap items-center justify-between gap-4 rounded-xl px-6 py-4">
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-3">
           <h2 className="font-semibold text-foreground">{courseTitle}</h2>
-          <Badge tone={TONE[t.status]}>{COHORT_STATUS_LABEL[t.status]}</Badge>
+          <Badge tone={TONE[status]}>{COHORT_STATUS_LABEL[status]}</Badge>
+          {t.status === 'open' && isFull(t) && <Badge tone="warning">Vagas esgotadas</Badge>}
         </div>
         <ul className="mt-1 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
           <li className="inline-flex items-center gap-1.5">

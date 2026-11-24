@@ -1,8 +1,10 @@
 'use server';
 
+import { isFull, withOccupancy } from '@/domain/cohorts';
 import { adminCancelBlockReason, adminLinkBlockReason } from '@/domain/enrollmentRules';
 import { studentsOfOrder } from '@/domain/orderCourses';
 import { adminMutation } from '@/features/auth/server';
+import { cohortsService } from '@/services/cohorts.service';
 import { coursesService } from '@/services/courses.service';
 import { customersService, ordersService } from '@/services/commerce.service';
 import { listEnrollments, setEnrollmentCohort } from '@/services/enrollments.service';
@@ -57,7 +59,8 @@ export async function setStudentCohort(
   reason: string,
 ): Promise<ActionResult<unknown>> {
   if (!reason.trim()) return fail('Informe a justificativa antes de confirmar.');
-  const enrollment = (await listEnrollments()).find((e) => e.id === enrollmentId);
+  const enrollments = await listEnrollments();
+  const enrollment = enrollments.find((e) => e.id === enrollmentId);
   if (!enrollment) return fail('Matrícula não encontrada.');
   const blocked = adminLinkBlockReason({
     inProgress: enrollment.status === 'in_progress',
@@ -65,5 +68,10 @@ export async function setStudentCohort(
     linkedAtIso: enrollment.updatedAt,
   });
   if (blocked) return fail(blocked);
+  if (cohortId && cohortId !== enrollment.cohortId) {
+    const cohort = withOccupancy(await cohortsService.list(), enrollments).find((c) => c.id === cohortId);
+    if (!cohort) return fail('Turma não encontrada.');
+    if (isFull(cohort)) return fail('Esta turma não tem vagas livres.');
+  }
   return adminMutation('orders', ['enrollments'], () => setEnrollmentCohort(enrollmentId, cohortId));
 }

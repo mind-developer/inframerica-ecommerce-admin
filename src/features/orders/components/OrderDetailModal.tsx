@@ -58,7 +58,7 @@ export function OrderDetailModal({ order, lookups, onClose, onResendEmail, onCha
                   key={m.id}
                   student={m}
                   onUnlink={() => onChangeLink(m, null)}
-                  onLink={() => onChangeLink(m, lookups.cohortsOfCourse(m.courseId)[0]?.id ?? null)}
+                  onLink={() => onChangeLink(m, lookups.cohortsOfCourse(m.courseId)[0]?.id ?? '')}
                 />
               ))}
             </ul>

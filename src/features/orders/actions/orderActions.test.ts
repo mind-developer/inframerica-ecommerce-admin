@@ -55,4 +55,25 @@ describe('setStudentCohort', () => {
     expect((await setStudentCohort('mat-2', null, 'pessoa saiu da empresa')).ok).toBe(true);
     expect(getDb().enrollments.find('mat-2')).toMatchObject({ cohortId: null, status: 'pending' });
   });
+
+  it('refuses a full cohort, unless the student already has the seat (#64)', async () => {
+    getDb().enrollments.update('mat-2', { updatedAt: '2026-04-20T12:00:00Z', cohortId: null, status: 'pending' });
+    const taken = getDb()
+      .enrollments.all()
+      .filter((e) => e.cohortId === 'tur-2').length;
+    getDb().cohorts.update('tur-2', { totalSeats: taken });
+    expect(await setStudentCohort('mat-2', 'tur-2', 'troca')).toEqual({
+      ok: false,
+      error: 'Esta turma não tem vagas livres.',
+    });
+    expect(getDb().enrollments.find('mat-2')?.cohortId).toBeNull();
+    getDb().cohorts.update('tur-2', { totalSeats: taken + 1 });
+    expect((await setStudentCohort('mat-2', 'tur-2', 'troca')).ok).toBe(true);
+    expect((await setStudentCohort('mat-2', 'tur-2', 'confirmar')).ok).toBe(true);
+  });
+
+  it('refuses a cohort that no longer exists', async () => {
+    getDb().enrollments.update('mat-2', { updatedAt: '2026-04-20T12:00:00Z' });
+    expect(await setStudentCohort('mat-2', 'nope', 'troca')).toEqual({ ok: false, error: 'Turma não encontrada.' });
+  });
 });

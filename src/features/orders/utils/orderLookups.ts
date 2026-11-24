@@ -1,3 +1,4 @@
+import { isFull } from '@/domain/cohorts';
 import { coursesOfOrder, studentsOfOrder } from '@/domain/orderCourses';
 import type { Course } from '@/types/catalog';
 import type { Cohort } from '@/types/cohorts';
@@ -23,10 +24,10 @@ export function buildOrderLookups({ customers, courses, enrollments, cohorts, se
     customerOf: (id: string) => byId.get(id),
     coursesOf: (o: Order) => coursesOfOrder(o, courses),
     studentsOf: (o: Order) => studentsOfOrder(o, courses, enrollments, customers),
-    /** Cohorts a credit can be linked to: same course, not canceled/completed, by start date. */
+    /** Cohorts a credit can be linked to: same course, not canceled/completed, with a free seat (#64), by start date. */
     cohortsOfCourse: (courseId: string) =>
       cohorts
-        .filter((t) => t.courseId === courseId && (t.status === 'open' || t.status === 'closed'))
+        .filter((t) => t.courseId === courseId && (t.status === 'open' || t.status === 'closed') && !isFull(t))
         .sort((a, b) => a.startDate.localeCompare(b.startDate)),
     sectorName: (id: string | null) => sectors.find((s) => s.id === id)?.name ?? '—',
   };
