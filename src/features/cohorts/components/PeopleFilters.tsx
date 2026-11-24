@@ -7,13 +7,7 @@ import { Select } from '@/components/ui/Select';
 import { ENROLLMENT_STATUS_LABEL, ENROLLMENT_STATUS_ORDER } from '@/constants/labels';
 import type { Concessionaire } from '@/types/concessionaires';
 import type { EnrollmentStatus } from '@/types/enrollments';
-
-export interface PeopleFilterValues {
-  nome: string;
-  cpf: string;
-  cessionaria: string | null;
-  status: EnrollmentStatus | null;
-}
+import type { PeopleFilterValues } from '../utils/peopleFilters';
 
 export function PeopleFilters({
   values,

@@ -72,8 +72,9 @@ describe('an admin limited to one sector (#49)', () => {
     const [mine] = await listEnrollmentsByCohort('tur-1');
     const [theirs] = await listEnrollmentsByCohort('tur-2');
     expect(await changeEnrollmentStatus(theirs!.id, mine!.status)).toEqual(denied);
-    expect(await unlinkEnrollment(theirs!.id)).toEqual(denied);
-    expect((await unlinkEnrollment(mine!.id)).ok).toBe(true);
+    expect(await unlinkEnrollment(theirs!.id, 'motivo')).toEqual(denied);
+    getDb().enrollments.update(mine!.id, { status: 'enrolled', updatedAt: new Date().toISOString() });
+    expect((await unlinkEnrollment(mine!.id, 'motivo')).ok).toBe(true);
   });
 });
 
@@ -87,5 +88,41 @@ describe('occupancy (#63)', () => {
       error: `O total de vagas não pode ficar abaixo das ${taken} já ocupadas`,
     });
     expect((await saveCohort('tur-1', { ...values, totalSeats: taken })).ok).toBe(true);
+  });
+});
+
+describe('unlinkEnrollment (#65)', () => {
+  const linkedNow = () =>
+    getDb().enrollments.update('mat-2', { status: 'enrolled', updatedAt: new Date().toISOString() });
+
+  it('requires a justification', async () => {
+    linkedNow();
+    expect(await unlinkEnrollment('mat-2', '  ')).toEqual({
+      ok: false,
+      error: 'Informe a justificativa antes de confirmar.',
+    });
+    expect(getDb().enrollments.find('mat-2')?.cohortId).toBe('tur-1');
+  });
+
+  it('follows the same rules as the orders screen: not started, not completed, within 15 days', async () => {
+    for (const [patch, message] of [
+      [{ status: 'in_progress' }, /já iniciado/],
+      [{ status: 'completed' }, /já concluído/],
+      [{ status: 'enrolled', updatedAt: '2020-01-01T00:00:00Z' }, /mais de 15 dias/],
+    ] as const) {
+      getDb().enrollments.update('mat-2', patch);
+      const r = await unlinkEnrollment('mat-2', 'motivo');
+      expect(!r.ok && r.error).toMatch(message);
+    }
+  });
+
+  it('returns the credit, freeing the seat', async () => {
+    linkedNow();
+    expect((await unlinkEnrollment('mat-2', 'pessoa saiu da empresa')).ok).toBe(true);
+    expect(getDb().enrollments.find('mat-2')).toMatchObject({ cohortId: null, status: 'pending' });
+  });
+
+  it('refuses an enrollment that no longer exists', async () => {
+    expect(await unlinkEnrollment('nope', 'motivo')).toEqual({ ok: false, error: 'Matrícula não encontrada.' });
   });
 });

@@ -3,17 +3,10 @@
 import { AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Tooltip } from '@/components/ui/Tooltip';
-import { adminLinkBlockReason } from '@/domain/enrollmentRules';
+import { linkBlockReason } from '@/domain/enrollmentLink';
 import { EnrollmentStatusBadge } from '@/features/cohorts';
 import type { Enrollment } from '@/types/enrollments';
 import { formatDateTime, formatDocument } from '@/utils/format';
-
-export const linkBlockReason = (m: Enrollment) =>
-  adminLinkBlockReason({
-    inProgress: m.status === 'in_progress',
-    completed: m.status === 'completed',
-    linkedAtIso: m.updatedAt,
-  });
 
 /** One student on the order's credits, with link/unlink (blocked by the same rules as the customer area). */
 export function OrderStudentRow({

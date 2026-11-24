@@ -1,6 +1,7 @@
 'use server';
 
 import { findSubstituteCohort, withOccupancy } from '@/domain/cohorts';
+import { linkBlockReason } from '@/domain/enrollmentLink';
 import { adminMutation } from '@/features/auth/server';
 import { outsideSector } from '@/features/courses/server';
 import { cohortsService } from '@/services/cohorts.service';
@@ -72,7 +73,13 @@ export async function changeEnrollmentStatus(id: string, status: EnrollmentStatu
   return adminMutation('cohorts', ['enrollments'], () => updateEnrollmentStatus(id, status));
 }
 
-export async function unlinkEnrollment(id: string): Promise<ActionResult<unknown>> {
+/** Unlinks a person (their credit is returned): mandatory reason and the same rules as the orders screen. */
+export async function unlinkEnrollment(id: string, reason: string): Promise<ActionResult<unknown>> {
   if (await enrollmentOutside(id)) return OTHER_SECTOR;
+  if (!reason.trim()) return { ok: false, error: 'Informe a justificativa antes de confirmar.' };
+  const enrollment = (await listEnrollments()).find((e) => e.id === id);
+  if (!enrollment) return { ok: false, error: 'Matrícula não encontrada.' };
+  const blocked = linkBlockReason(enrollment);
+  if (blocked) return { ok: false, error: blocked };
   return adminMutation('cohorts', ['enrollments'], () => setEnrollmentCohort(id, null));
 }

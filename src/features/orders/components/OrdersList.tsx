@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { toast } from '@/components/ui/toast';
+import { linkBlockReason } from '@/domain/enrollmentLink';
 import { adminCancelBlockReason } from '@/domain/enrollmentRules';
 import type { Order } from '@/types/orders';
 import type { useOrderFilters } from '../hooks/useOrderFilters';
@@ -11,7 +12,6 @@ import { CancelOrderModal } from './CancelOrderModal';
 import { LinkCreditModal, type LinkTarget } from './LinkCreditModal';
 import { OrderDetailModal } from './OrderDetailModal';
 import { OrdersTable } from './OrdersTable';
-import { linkBlockReason } from './OrderStudentRow';
 
 interface Props {
   orders: Order[];

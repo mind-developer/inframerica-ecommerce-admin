@@ -1,7 +1,8 @@
 'use server';
 
 import { isFull, withOccupancy } from '@/domain/cohorts';
-import { adminCancelBlockReason, adminLinkBlockReason } from '@/domain/enrollmentRules';
+import { linkBlockReason } from '@/domain/enrollmentLink';
+import { adminCancelBlockReason } from '@/domain/enrollmentRules';
 import { studentsOfOrder } from '@/domain/orderCourses';
 import { adminMutation } from '@/features/auth/server';
 import { cohortsService } from '@/services/cohorts.service';
@@ -62,11 +63,7 @@ export async function setStudentCohort(
   const enrollments = await listEnrollments();
   const enrollment = enrollments.find((e) => e.id === enrollmentId);
   if (!enrollment) return fail('Matrícula não encontrada.');
-  const blocked = adminLinkBlockReason({
-    inProgress: enrollment.status === 'in_progress',
-    completed: enrollment.status === 'completed',
-    linkedAtIso: enrollment.updatedAt,
-  });
+  const blocked = linkBlockReason(enrollment);
   if (blocked) return fail(blocked);
   if (cohortId && cohortId !== enrollment.cohortId) {
     const cohort = withOccupancy(await cohortsService.list(), enrollments).find((c) => c.id === cohortId);
