@@ -4,7 +4,7 @@ import type { Enrollment, EnrollmentStatus } from '@/types/enrollments';
 import { getDb } from './mock/db';
 import { latency, newId, nowIso } from './mock/table';
 
-export type EnrollmentInput = Omit<Enrollment, 'id' | 'createdAt' | 'updatedAt' | 'completedAt'>;
+export type EnrollmentInput = Omit<Enrollment, 'id' | 'createdAt' | 'updatedAt' | 'completedAt' | 'linkedAt'>;
 
 const table = () => getDb().enrollments;
 
@@ -31,7 +31,14 @@ export async function listEnrollmentsByCohort(cohortId: Id): Promise<Enrollment[
 export async function createEnrollment(input: EnrollmentInput): Promise<Enrollment> {
   await latency();
   const now = nowIso();
-  return table().insert({ ...input, id: newId('mat'), completedAt: null, createdAt: now, updatedAt: now });
+  return table().insert({
+    ...input,
+    id: newId('mat'),
+    linkedAt: input.cohortId ? now : null,
+    completedAt: null,
+    createdAt: now,
+    updatedAt: now,
+  });
 }
 
 /** Moves the enrollment through its life cycle. Completion is stamped here (it enables the certificate). */
@@ -51,5 +58,6 @@ export async function setEnrollmentCohort(id: Id, cohortId: Id | null): Promise<
   const current = mustFind(id);
   const status: EnrollmentStatus =
     cohortId === null ? 'pending' : current.status === 'pending' ? 'enrolled' : current.status;
-  return table().update(id, { cohortId, status, updatedAt: nowIso() });
+  const linkedAt = cohortId === null ? null : cohortId === current.cohortId ? current.linkedAt : nowIso();
+  return table().update(id, { cohortId, status, linkedAt, updatedAt: nowIso() });
 }

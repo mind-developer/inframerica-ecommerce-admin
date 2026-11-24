@@ -15,7 +15,7 @@ const row = (patch: Partial<Enrollment>, readOnly = false) =>
       />
     </ReadOnlyContext.Provider>,
   );
-const recent = { status: 'enrolled' as const, updatedAt: new Date().toISOString() };
+const recent = { status: 'enrolled' as const, linkedAt: new Date().toISOString() };
 
 describe('EnrollmentRow (#65)', () => {
   it('lets a recent link be undone', () => {

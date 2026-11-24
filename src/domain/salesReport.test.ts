@@ -62,6 +62,7 @@ const enrollment = (over: Partial<Enrollment> = {}): Enrollment => ({
   courseTitle: 'AVSEC',
   cohortId: 'tur-1',
   status: 'enrolled',
+  linkedAt: null,
   completedAt: null,
   createdAt: '2026-03-01T10:00:00.000Z',
   updatedAt: '2026-03-02T10:00:00.000Z',

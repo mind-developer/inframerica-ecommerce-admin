@@ -18,7 +18,7 @@ afterEach(() => vi.useRealTimers());
 const first = () => getDb().enrollments.all()[0]!;
 
 describe('setEnrollmentCohort', () => {
-  it('sets the cohort and stamps updatedAt (the anchor of the 15-day rule)', async () => {
+  it('sets the cohort and stamps updatedAt', async () => {
     const r = await setEnrollmentCohort(first().id, 'tur-2');
     expect(r).toMatchObject({ cohortId: 'tur-2', updatedAt: '2026-10-19T12:00:00.000Z' });
   });
@@ -89,5 +89,26 @@ describe('createEnrollment / lists', () => {
   it('seed invariant: only completed enrollments carry completedAt', async () => {
     expect(enrollmentsSeed.filter((e) => e.status !== 'completed').every((e) => e.completedAt === null)).toBe(true);
     expect(await listEnrollments()).toHaveLength(enrollmentsSeed.length);
+  });
+});
+
+describe('linkedAt', () => {
+  beforeEach(() => resetDb());
+  const row = () => getDb().enrollments.find('mat-2')!;
+
+  it('is stamped by linking and cleared by unlinking', async () => {
+    await setEnrollmentCohort('mat-2', null);
+    expect(row().linkedAt).toBeNull();
+    await setEnrollmentCohort('mat-2', 'tur-1');
+    expect(Date.now() - Date.parse(row().linkedAt!)).toBeLessThan(5000);
+  });
+
+  it('survives a status change and a link to the same cohort', async () => {
+    const before = row().linkedAt;
+    expect(before).not.toBeNull();
+    await updateEnrollmentStatus('mat-2', 'in_progress');
+    await updateEnrollmentStatus('mat-2', 'enrolled');
+    await setEnrollmentCohort('mat-2', 'tur-1');
+    expect(row().linkedAt).toBe(before);
   });
 });

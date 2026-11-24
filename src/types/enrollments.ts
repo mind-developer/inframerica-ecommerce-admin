@@ -22,6 +22,8 @@ export interface Enrollment {
   /** null = seat bought without a cohort. */
   cohortId: Id | null;
   status: EnrollmentStatus;
+  /** When the person was linked to the current cohort; null without one. The 15-day rule counts from here. */
+  linkedAt: string | null;
   completedAt: string | null;
   createdAt: string;
   updatedAt: string;

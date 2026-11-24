@@ -27,7 +27,7 @@ export function OrderStudentRow({
           CPF {formatDocument(m.personCpf)} · {m.courseTitle}
         </p>
         <p className="text-[11px] text-muted-foreground">
-          {m.cohortId ? `Vinculado em ${formatDateTime(m.updatedAt)}` : 'Sem turma atribuída'}
+          {m.cohortId ? `Vinculado em ${formatDateTime(m.linkedAt ?? m.updatedAt)}` : 'Sem turma atribuída'}
         </p>
       </div>
       <EnrollmentStatusBadge status={m.status} />

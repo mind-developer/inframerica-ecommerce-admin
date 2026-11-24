@@ -73,7 +73,7 @@ describe('an admin limited to one sector (#49)', () => {
     const [theirs] = await listEnrollmentsByCohort('tur-2');
     expect(await changeEnrollmentStatus(theirs!.id, mine!.status)).toEqual(denied);
     expect(await unlinkEnrollment(theirs!.id, 'motivo')).toEqual(denied);
-    getDb().enrollments.update(mine!.id, { status: 'enrolled', updatedAt: new Date().toISOString() });
+    getDb().enrollments.update(mine!.id, { status: 'enrolled', linkedAt: new Date().toISOString() });
     expect((await unlinkEnrollment(mine!.id, 'motivo')).ok).toBe(true);
   });
 });
@@ -93,7 +93,7 @@ describe('occupancy (#63)', () => {
 
 describe('unlinkEnrollment (#65)', () => {
   const linkedNow = () =>
-    getDb().enrollments.update('mat-2', { status: 'enrolled', updatedAt: new Date().toISOString() });
+    getDb().enrollments.update('mat-2', { status: 'enrolled', linkedAt: new Date().toISOString() });
 
   it('requires a justification', async () => {
     linkedNow();
@@ -108,12 +108,19 @@ describe('unlinkEnrollment (#65)', () => {
     for (const [patch, message] of [
       [{ status: 'in_progress' }, /já iniciado/],
       [{ status: 'completed' }, /já concluído/],
-      [{ status: 'enrolled', updatedAt: '2020-01-01T00:00:00Z' }, /mais de 15 dias/],
+      [{ status: 'enrolled', linkedAt: '2020-01-01T00:00:00Z' }, /mais de 15 dias/],
     ] as const) {
       getDb().enrollments.update('mat-2', patch);
       const r = await unlinkEnrollment('mat-2', 'motivo');
       expect(!r.ok && r.error).toMatch(message);
     }
+  });
+
+  it('counts the 15 days from the link: changing the status does not restart them', async () => {
+    getDb().enrollments.update('mat-2', { status: 'enrolled', linkedAt: '2020-01-01T00:00:00Z' });
+    expect((await changeEnrollmentStatus('mat-2', 'pending')).ok).toBe(true);
+    const r = await unlinkEnrollment('mat-2', 'motivo');
+    expect(!r.ok && r.error).toMatch(/mais de 15 dias/);
   });
 
   it('returns the credit, freeing the seat', async () => {

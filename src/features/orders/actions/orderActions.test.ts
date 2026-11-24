@@ -51,13 +51,13 @@ describe('setStudentCohort', () => {
   });
 
   it('unlinks within the 15-day window', async () => {
-    getDb().enrollments.update('mat-2', { updatedAt: '2026-04-20T12:00:00Z' });
+    getDb().enrollments.update('mat-2', { linkedAt: '2026-04-20T12:00:00Z' });
     expect((await setStudentCohort('mat-2', null, 'pessoa saiu da empresa')).ok).toBe(true);
     expect(getDb().enrollments.find('mat-2')).toMatchObject({ cohortId: null, status: 'pending' });
   });
 
   it('refuses a full cohort, unless the student already has the seat (#64)', async () => {
-    getDb().enrollments.update('mat-2', { updatedAt: '2026-04-20T12:00:00Z', cohortId: null, status: 'pending' });
+    getDb().enrollments.update('mat-2', { linkedAt: '2026-04-20T12:00:00Z', cohortId: null, status: 'pending' });
     const taken = getDb()
       .enrollments.all()
       .filter((e) => e.cohortId === 'tur-2').length;
@@ -73,7 +73,7 @@ describe('setStudentCohort', () => {
   });
 
   it('refuses a cohort that no longer exists', async () => {
-    getDb().enrollments.update('mat-2', { updatedAt: '2026-04-20T12:00:00Z' });
+    getDb().enrollments.update('mat-2', { linkedAt: '2026-04-20T12:00:00Z' });
     expect(await setStudentCohort('mat-2', 'nope', 'troca')).toEqual({ ok: false, error: 'Turma não encontrada.' });
   });
 });
