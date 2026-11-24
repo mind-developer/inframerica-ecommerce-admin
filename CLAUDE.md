@@ -72,6 +72,7 @@ Enforced by ESLint (`pnpm lint` fails):
 6. **Locale:** UI text pt-BR; code and domain names in English. Money via `formatBRL` (`formatBRLWhole` for KPI tiles); dates `dd/MM/yyyy` in `America/Sao_Paulo` (`utils/format.ts`, `utils/civilDate.ts`). Labels in `constants/labels.ts`.
 7. **Open product rules** show `<PendingRuleBadge>` ("Regra em definição") instead of inventing behaviour.
 8. **Mocked integrations stay visibly mocked:** invoice/billing flags on orders, BI token, auto-cancel job, synthetic report rows.
+   The course preview mirrors the store's page (#70): `CourseAbout`, `CourseTabs`, `PurchaseIncludes`, `CourseCurriculum` and `domain/purchaseLimits.ts` are copies of the storefront's; change both.
 9. **Accessibility:** semantic HTML, labels on icon buttons, visible focus, no hover-only interaction, `prefers-reduced-motion`.
 10. Components never `fetch`; they use actions or server data.
 

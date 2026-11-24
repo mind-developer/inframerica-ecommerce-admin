@@ -25,18 +25,22 @@ export function CourseHero({ course }: { course: Course }) {
           </h1>
           <p className="mb-6 text-primary-foreground/70">{course.description}</p>
           <ul className="mb-4 flex flex-wrap items-center gap-4 text-xs text-primary-foreground/60">
-            <li className="inline-flex items-center gap-1">
-              <Clock aria-hidden className="size-3.5 text-gold" /> {course.duration}
-            </li>
+            {course.duration && (
+              <li className="inline-flex items-center gap-1">
+                <Clock aria-hidden className="size-3.5 text-gold" /> {course.duration}
+              </li>
+            )}
             <li className="inline-flex items-center gap-1">
               <Users aria-hidden className="size-3.5 text-gold" /> {course.students.toLocaleString('pt-BR')}+ alunos
             </li>
             <li className="inline-flex items-center gap-1">
               <BookOpen aria-hidden className="size-3.5 text-gold" /> {course.modules} módulos
             </li>
-            <li className="inline-flex items-center gap-1">
-              <Award aria-hidden className="size-3.5 text-gold" /> Certificado incluso
-            </li>
+            {course.certificate && (
+              <li className="inline-flex items-center gap-1">
+                <Award aria-hidden className="size-3.5 text-gold" /> Certificado incluso
+              </li>
+            )}
           </ul>
         </div>
       </div>

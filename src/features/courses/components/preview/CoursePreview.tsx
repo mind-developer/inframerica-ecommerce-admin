@@ -7,11 +7,13 @@ import type { Course } from '@/types/catalog';
 import { CourseAbout } from './CourseAbout';
 import { CourseCurriculum } from './CourseCurriculum';
 import { CourseHero } from './CourseHero';
+import { CourseTabs } from './CourseTabs';
 import { PreviewPurchaseBox } from './PreviewPurchaseBox';
 
 /**
  * Preview of the public course page. It mirrors the storefront's layout (hero, "Sobre o Curso",
- * "Conteúdo Programático", purchase card) so it shows what customers actually see (prototype pending 8).
+ * "Conteúdo Programático", purchase card) so it shows what customers actually see (prototype pending 8, #70).
+ * The store's calendar and related courses are left out: they don't come from this course yet.
  */
 export function CoursePreview({ course }: { course: Course }) {
   const lessons = course.curriculum.reduce((n, m) => n + m.lessons.length, 0);
@@ -36,6 +38,11 @@ export function CoursePreview({ course }: { course: Course }) {
           </Link>
         </div>
       </div>
+      {!course.active && (
+        <p role="status" className="border-b border-border bg-warning-soft px-4 py-2 text-sm text-warning lg:px-6">
+          Este curso não está publicado: só aparece aqui, no preview, e não na loja.
+        </p>
+      )}
       <div className="bg-background">
         <CourseHero course={course} />
         <section className="container max-w-6xl py-12">
@@ -43,15 +50,21 @@ export function CoursePreview({ course }: { course: Course }) {
             <div className="lg:w-[360px] lg:shrink-0">
               <PreviewPurchaseBox course={course} />
             </div>
-            <div className="min-w-0 flex-1 space-y-12">
-              <CourseAbout course={course} />
-              <div>
-                <h3 className="mb-5 font-heading text-lg font-bold text-foreground">Conteúdo Programático do Curso</h3>
-                <p className="mb-5 text-xs text-muted-foreground">
-                  {course.curriculum.length} módulos · {lessons} aulas · {course.duration} total
-                </p>
-                <CourseCurriculum curriculum={course.curriculum} />
-              </div>
+            <div className="min-w-0 flex-1">
+              <CourseTabs
+                about={<CourseAbout course={course} />}
+                curriculum={
+                  <div>
+                    <h3 className="mb-5 font-heading text-lg font-bold text-foreground">
+                      Conteúdo Programático do Curso
+                    </h3>
+                    <p className="mb-5 text-xs text-muted-foreground">
+                      {course.curriculum.length} módulos · {lessons} aulas · {course.duration} total
+                    </p>
+                    <CourseCurriculum curriculum={course.curriculum} />
+                  </div>
+                }
+              />
             </div>
           </div>
         </section>
