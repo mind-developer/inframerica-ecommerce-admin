@@ -3,6 +3,7 @@
 import { X } from 'lucide-react';
 import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { cn } from '@/utils/cn';
+import { hostToasts } from './toast/toastStore';
 
 interface ModalProps {
   open: boolean;
@@ -29,6 +30,7 @@ export function Modal({ open, onClose, title, description, size = 'md', footer, 
     if (!dialog) return;
     if (open && !dialog.open) dialog.showModal();
     if (!open && dialog.open) dialog.close();
+    if (open) return hostToasts(dialog);
   }, [open]);
 
   return (

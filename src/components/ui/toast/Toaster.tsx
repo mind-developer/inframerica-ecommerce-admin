@@ -1,6 +1,7 @@
 'use client';
 
 import { AlertTriangle, CheckCircle2, Info, X, XCircle } from 'lucide-react';
+import { createPortal } from 'react-dom';
 import { cn } from '@/utils/cn';
 import { useToastStore, type ToastKind } from './toastStore';
 
@@ -11,14 +12,28 @@ const KIND: Record<ToastKind, { Icon: typeof Info; className: string }> = {
   error: { Icon: XCircle, className: 'text-destructive' },
 };
 
-/** Mount once at the root. Bottom-centre on phones, bottom-right on desktop; announced politely. */
+/** Joins the browser's top layer, above an open <dialog> and its backdrop. */
+function showOnTop(el: HTMLDivElement | null) {
+  el?.showPopover?.();
+  return () => {
+    if (el?.isConnected) el.hidePopover?.();
+  };
+}
+
+/**
+ * Mount once at the root. Bottom-centre on phones, bottom-right on desktop; announced politely. With a modal
+ * open it renders inside it, because everything outside an open modal is inert.
+ */
 export function Toaster() {
   const toasts = useToastStore((s) => s.toasts);
   const dismiss = useToastStore((s) => s.dismiss);
-  return (
+  const host = useToastStore((s) => s.hosts.at(-1));
+  const list = (
     <div
+      ref={showOnTop}
+      popover="manual"
       aria-live="polite"
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-[110] flex flex-col items-center gap-2 p-4 pb-[max(16px,env(safe-area-inset-bottom))] lg:items-end"
+      className="pointer-events-none fixed inset-x-0 top-auto bottom-0 z-[110] m-0 flex w-full flex-col items-center gap-2 overflow-visible border-0 bg-transparent p-4 pb-[max(16px,env(safe-area-inset-bottom))] lg:items-end"
     >
       {toasts.map(({ id, title, message, kind }) => {
         const { Icon, className } = KIND[kind];
@@ -46,4 +61,5 @@ export function Toaster() {
       })}
     </div>
   );
+  return host ? createPortal(list, host) : list;
 }
