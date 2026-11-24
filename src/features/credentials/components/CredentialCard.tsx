@@ -6,12 +6,14 @@ import type { Credential } from '@/types/catalog';
 
 interface Props {
   credential: Credential;
+  /** How many courses enable it (#69). */
+  courses: number;
   sectorName: (id: string) => string;
   onEdit: () => void;
   onDelete: () => void;
 }
 
-export function CredentialCard({ credential: c, sectorName, onEdit, onDelete }: Props) {
+export function CredentialCard({ credential: c, courses, sectorName, onEdit, onDelete }: Props) {
   return (
     <li>
       <Card className="flex flex-wrap items-start justify-between gap-4 rounded-xl p-4">
@@ -33,6 +35,13 @@ export function CredentialCard({ credential: c, sectorName, onEdit, onDelete }: 
               </Badge>
             ))}
           </div>
+          <p className="mt-1.5 text-xs text-muted-foreground">
+            {courses === 0
+              ? 'Nenhum curso vinculado'
+              : courses === 1
+                ? '1 curso vinculado'
+                : `${courses} cursos vinculados`}
+          </p>
         </div>
         <div className="flex gap-2">
           <IconButton label={`Editar ${c.name}`} onClick={onEdit}>

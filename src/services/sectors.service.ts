@@ -1,4 +1,4 @@
-/** Sectors, from inframerica-ecommerce-api. Courses (API) and mock credentials point to them by id. */
+/** Sectors, from inframerica-ecommerce-api. Courses and credentials point to them by id. */
 import 'server-only';
 import type { Sector, SectorInput, SectorPage } from '@/types/sectors';
 import { adminRead, adminWrite } from './api/adminApi';

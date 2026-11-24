@@ -1,7 +1,7 @@
 'use server';
 
 import { adminMutation } from '@/features/auth/server';
-import { credentialsService } from '@/services/catalog.service';
+import { credentialsService } from '@/services/credentials.service';
 import type { ActionResult } from '@/types/common';
 import { credentialSchema, type CredentialFormValues } from '../schemas/credentialSchema';
 

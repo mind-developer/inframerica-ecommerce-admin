@@ -1,4 +1,4 @@
-import { credentialsService } from '@/services/catalog.service';
+import { credentialsService } from '@/services/credentials.service';
 import { resetDb } from '@/services/mock/db';
 import { cookieJar } from '@/test/cookieJar';
 import { signInAs } from '@/test/session';

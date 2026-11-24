@@ -14,7 +14,15 @@ import { deleteCredential } from '../actions/credentialActions';
 import { CredentialCard } from './CredentialCard';
 import { CredentialFormModal } from './CredentialFormModal';
 
-export function CredentialsView({ credentials, sectors }: { credentials: Credential[]; sectors: Sector[] }) {
+export function CredentialsView({
+  credentials,
+  sectors,
+  coursesByCredential,
+}: {
+  credentials: Credential[];
+  sectors: Sector[];
+  coursesByCredential: Record<string, number>;
+}) {
   const [query, setQuery] = useQueryState('q', parseAsString.withDefault(''));
   const [editing, setEditing] = useState<Credential | 'new' | null>(null);
   const [removing, setRemoving] = useState<Credential | null>(null);
@@ -52,6 +60,7 @@ export function CredentialsView({ credentials, sectors }: { credentials: Credent
             <CredentialCard
               key={c.id}
               credential={c}
+              courses={coursesByCredential[c.id] ?? 0}
               sectorName={sectorName}
               onEdit={() => setEditing(c)}
               onDelete={() => setRemoving(c)}

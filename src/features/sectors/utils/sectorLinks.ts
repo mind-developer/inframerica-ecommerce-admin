@@ -1,4 +1,4 @@
-/** What points to a sector (courses and credentials live in the mock for now). */
+/** What points to a sector . */
 export interface SectorLinks {
   courses: number;
   credentials: number;

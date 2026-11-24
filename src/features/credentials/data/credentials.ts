@@ -1,11 +1,5 @@
 import 'server-only';
-import { cacheLife, cacheTag } from 'next/cache';
-import { CACHE_TAGS } from '@/constants/cacheTags';
-import { credentialsService } from '@/services/catalog.service';
+import { credentialsService } from '@/services/credentials.service';
 
-export async function getCredentials() {
-  'use cache';
-  cacheTag(CACHE_TAGS.credentials);
-  cacheLife('days');
-  return credentialsService.list();
-}
+/** Every credential (#69). Read per request: it needs the admin's API token. */
+export const getCredentials = () => credentialsService.list();

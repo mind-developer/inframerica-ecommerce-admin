@@ -7,6 +7,7 @@ import { adminFind, adminRead, adminWrite } from './api/adminApi';
 const notFound = 'Curso não encontrado';
 const conflicts = {
   'slug-taken': 'Já existe um curso com este endereço (slug)',
+  'unknown-credential': 'Uma das credenciais escolhidas não existe mais',
   'unknown-sector': 'O setor escolhido não existe mais',
   'course-in-use': 'Este curso tem turmas. Remova ou mova as turmas antes.',
 };
@@ -48,6 +49,6 @@ export const coursesService = {
     fromApi(await adminWrite<Course>(`/admin/courses/${id}/published`, 'PATCH', { body: { active }, notFound })),
 
   remove: async (id: Id) => {
-    await adminWrite(`/admin/courses/${id}`, 'DELETE', { notFound });
+    await adminWrite(`/admin/courses/${id}`, 'DELETE', { conflicts, notFound });
   },
 };
