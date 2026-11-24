@@ -9,7 +9,7 @@ import type { Id } from '@/types/common';
 
 const crud = createCrudService<Cohort, CohortInput>(
   () => getDb().cohorts,
-  (input) => ({ ...input }),
+  (input) => ({ ...input, takenSeats: 0 }),
   'tur',
 );
 

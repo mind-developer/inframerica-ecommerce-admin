@@ -11,6 +11,7 @@ export interface Cohort {
   schedule: string;
   location: string;
   totalSeats: number;
+  /** Derived from the enrollments linked to the cohort (#63); never saved. */
   takenSeats: number;
   status: CohortStatus;
   /** Where participants meet (may differ from the course address). */
@@ -21,4 +22,4 @@ export interface Cohort {
   emailTemplate?: string;
 }
 
-export type CohortInput = Omit<Cohort, 'id'>;
+export type CohortInput = Omit<Cohort, 'id' | 'takenSeats'>;

@@ -41,9 +41,6 @@ describe('cancelCohort', () => {
 describe('saveCohort', () => {
   it('validates course, start date and seats', async () => {
     expect(await saveCohort(null, emptyCohort)).toEqual({ ok: false, error: 'Preencha curso e data de início' });
-    expect(
-      (await saveCohort(null, { ...emptyCohort, courseId: 'cur-1', startDate: '2026-12-01', takenSeats: 40 })).ok,
-    ).toBe(false);
     expect((await saveCohort(null, { ...emptyCohort, courseId: 'cur-1', startDate: '2026-12-01' })).ok).toBe(true);
   });
 });
@@ -77,5 +74,18 @@ describe('an admin limited to one sector (#49)', () => {
     expect(await changeEnrollmentStatus(theirs!.id, mine!.status)).toEqual(denied);
     expect(await unlinkEnrollment(theirs!.id)).toEqual(denied);
     expect((await unlinkEnrollment(mine!.id)).ok).toBe(true);
+  });
+});
+
+describe('occupancy (#63)', () => {
+  it('keeps the total of seats from going under the people already in the cohort', async () => {
+    const taken = (await listEnrollmentsByCohort('tur-1')).length;
+    const { id: _id, takenSeats: _t, ...c } = (await cohortsService.get('tur-1'))!;
+    const values = { ...emptyCohort, ...c, meetingPoint: '', materials: '', emailTemplate: '' };
+    expect(await saveCohort('tur-1', { ...values, totalSeats: taken - 1 })).toEqual({
+      ok: false,
+      error: `O total de vagas não pode ficar abaixo das ${taken} já ocupadas`,
+    });
+    expect((await saveCohort('tur-1', { ...values, totalSeats: taken })).ok).toBe(true);
   });
 });

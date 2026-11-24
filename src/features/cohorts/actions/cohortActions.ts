@@ -1,6 +1,6 @@
 'use server';
 
-import { findSubstituteCohort } from '@/domain/cohorts';
+import { findSubstituteCohort, withOccupancy } from '@/domain/cohorts';
 import { adminMutation } from '@/features/auth/server';
 import { outsideSector } from '@/features/courses/server';
 import { cohortsService } from '@/services/cohorts.service';
@@ -31,6 +31,9 @@ export async function saveCohort(id: string | null, values: CohortFormValues): P
   const parsed = cohortSchema.safeParse(values);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Dados inválidos' };
   if (await outsideSector([parsed.data.courseId, await courseOf(id)])) return OTHER_SECTOR;
+  const taken = id ? (await listEnrollmentsByCohort(id)).length : 0;
+  if (parsed.data.totalSeats < taken)
+    return { ok: false, error: `O total de vagas não pode ficar abaixo das ${taken} já ocupadas` };
   return adminMutation('cohorts', ['cohorts'], () =>
     id ? cohortsService.update(id, parsed.data) : cohortsService.create(parsed.data),
   );
@@ -53,7 +56,7 @@ export interface CancelOutcome {
 export async function cancelCohort(id: string): Promise<ActionResult<CancelOutcome>> {
   if (await cohortOutside(id)) return OTHER_SECTOR;
   return adminMutation('cohorts', ['cohorts', 'enrollments'], async () => {
-    const cohorts = await cohortsService.list();
+    const cohorts = withOccupancy(await cohortsService.list(), await listEnrollments());
     const cohort = cohorts.find((c) => c.id === id);
     if (!cohort) throw new Error('Turma não encontrada');
     const substitute = findSubstituteCohort(cohort, cohorts);

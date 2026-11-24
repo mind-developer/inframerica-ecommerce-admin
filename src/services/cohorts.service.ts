@@ -20,6 +20,8 @@ const fromApi = (c: Cohort | null): Cohort => {
   if (!c) throw new Error('Resposta vazia da API');
   return {
     ...c,
+    // Filled by the readers from the enrollments (#63); the API doesn't keep it.
+    takenSeats: 0,
     meetingPoint: c.meetingPoint || undefined,
     materials: c.materials || undefined,
     emailTemplate: c.emailTemplate || undefined,
@@ -44,7 +46,7 @@ export const cohortsService = {
   update: async (id: Id, patch: Partial<CohortInput>) => {
     const current = await get(id);
     if (!current) throw new Error(notFound);
-    const { id: _id, ...input } = { ...current, ...patch };
+    const { id: _id, takenSeats: _taken, ...input } = { ...current, ...patch };
     return fromApi(
       await adminWrite<Cohort>(`/admin/cohorts/${id}`, 'PATCH', { body: body(input), conflicts, notFound }),
     );

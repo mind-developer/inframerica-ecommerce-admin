@@ -9,7 +9,7 @@ import type { Cohort, CohortStatus } from '@/types/cohorts';
 import { saveCohort } from '../actions/cohortActions';
 import { cohortSchema, emptyCohort, type CohortFormValues } from '../schemas/cohortSchema';
 
-const toValues = ({ id: _id, ...c }: Cohort): CohortFormValues => ({
+const toValues = ({ id: _id, takenSeats: _taken, ...c }: Cohort): CohortFormValues => ({
   ...emptyCohort,
   ...c,
   meetingPoint: c.meetingPoint ?? '',
@@ -56,10 +56,15 @@ export function CohortFormModal({
       <form.AppField name="location">
         {(f) => <f.TextField label="Local" placeholder="Ex: BSB — Sala A" />}
       </form.AppField>
-      <div className="grid grid-cols-2 gap-4">
-        <form.AppField name="totalSeats">{(f) => <f.NumberField label="Total de Vagas" min={0} />}</form.AppField>
-        <form.AppField name="takenSeats">{(f) => <f.NumberField label="Vagas Ocupadas" min={0} />}</form.AppField>
-      </div>
+      <form.AppField name="totalSeats">
+        {(f) => (
+          <f.NumberField
+            label="Total de Vagas"
+            min={0}
+            help={cohort ? `${cohort.takenSeats} ocupada(s) pelas matrículas da turma` : undefined}
+          />
+        )}
+      </form.AppField>
       <form.AppField name="status">
         {(f) => (
           <f.SelectField
