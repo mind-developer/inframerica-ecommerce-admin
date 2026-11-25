@@ -2,3 +2,5 @@
 export const SESSION_COOKIE = 'inframerica_admin_session';
 /** The API's admin token, for calls the panel makes on the admin's behalf. */
 export const API_TOKEN_COOKIE = 'inframerica_admin_api';
+/** The Microsoft sign-in this browser started. */
+export const ENTRA_COOKIE = 'inframerica_admin_entra';

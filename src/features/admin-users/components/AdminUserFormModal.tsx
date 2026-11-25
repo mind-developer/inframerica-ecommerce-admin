@@ -5,8 +5,10 @@ import { submitHandler, useAppForm } from '@/components/ui/form';
 import { Modal } from '@/components/ui/Modal';
 import { useServerAction } from '@/components/ui/useServerAction';
 import type { AccessProfile, AdminUser } from '@/types/adminUsers';
+import type { LoginMethods } from '@/types/auth';
 import type { Sector } from '@/types/sectors';
 import { saveAdminUser } from '../actions/adminUserActions';
+import { AdminUserIdentityFields } from './AdminUserIdentityFields';
 import { adminUserSchema, emptyAdminUser } from '../schemas/adminUserSchema';
 
 const toValues = (user: AdminUser) => ({
@@ -22,8 +24,11 @@ export function AdminUserFormModal({
   user,
   sectors,
   profiles,
+  methods,
   onClose,
 }: {
+  /** The password field shows only while password sign-in is on; Microsoft needs none. */
+  methods: LoginMethods;
   user: AdminUser | null;
   sectors: Sector[];
   profiles: AccessProfile[];
@@ -53,18 +58,7 @@ export function AdminUserFormModal({
       }
     >
       <form noValidate onSubmit={submitHandler(form)} className="space-y-4">
-        <form.AppField name="name">{(f) => <f.TextField label="Nome" required />}</form.AppField>
-        <form.AppField name="email">{(f) => <f.TextField label="Email" type="email" required />}</form.AppField>
-        <form.AppField name="password">
-          {(f) => (
-            <f.TextField
-              label={user ? 'Nova senha (opcional)' : 'Senha provisória'}
-              type="password"
-              autoComplete="new-password"
-              required={!user}
-            />
-          )}
-        </form.AppField>
+        <AdminUserIdentityFields form={form} isNew={!user} methods={methods} />
         <form.AppField name="profileId">
           {(f) => (
             <f.SelectField

@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { IconButton } from '@/components/ui/IconButton';
 import { PageHeader } from '@/components/ui/PageHeader';
 import type { AccessProfile, AdminUser } from '@/types/adminUsers';
+import type { LoginMethods } from '@/types/auth';
 import type { Sector } from '@/types/sectors';
 import { deleteAdminUser } from '../actions/adminUserActions';
 import { AdminUserFormModal } from './AdminUserFormModal';
@@ -18,7 +19,9 @@ export function AdminUsersView({
   users,
   sectors,
   profiles,
+  methods,
 }: {
+  methods: LoginMethods;
   users: AdminUser[];
   sectors: Sector[];
   profiles: AccessProfile[];
@@ -74,6 +77,7 @@ export function AdminUsersView({
           user={editing === 'new' ? null : editing}
           sectors={sectors}
           profiles={profiles}
+          methods={methods}
           onClose={() => setEditing(null)}
         />
       )}

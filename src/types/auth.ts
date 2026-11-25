@@ -11,3 +11,9 @@ export interface AdminSessionUser {
   /** "resource.action" pairs, e.g. "orders.read". */
   permissions: string[];
 }
+
+/** Sign-in methods the API has on. */
+export interface LoginMethods {
+  microsoft: boolean;
+  password: boolean;
+}

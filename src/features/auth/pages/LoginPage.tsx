@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { LoginForm } from '../components/LoginForm';
+import { getLoginMethods } from '@/services/adminAuth.service';
+import { LoginOptions } from '../components/LoginOptions';
 
 export function LoginPage() {
   return (
@@ -10,11 +11,15 @@ export function LoginPage() {
         <p className="mb-6 text-xs text-muted-foreground">Painel Administrativo</p>
         <h1 className="mb-1 font-heading text-2xl font-bold">Entrar</h1>
         <p className="mb-6 text-sm text-muted-foreground">Acesso restrito à equipe Inframérica.</p>
-        {/* The form reads ?redirect= from the URL, which only exists at request time. */}
+        {/* The methods come from the API, and ?redirect= and ?erro= from the URL: all known at request time. */}
         <Suspense fallback={<Skeleton className="h-56 w-full rounded-xl" />}>
-          <LoginForm />
+          <LoginContent />
         </Suspense>
       </div>
     </main>
   );
+}
+
+async function LoginContent() {
+  return <LoginOptions methods={await getLoginMethods()} />;
 }

@@ -7,7 +7,7 @@ export const adminUserSchema = z.object({
   /** '' in the form = all sectors. */
   sectorId: z.string(),
   active: z.boolean(),
-  /** PROVISIONAL, until Microsoft SSO. Empty on edit keeps the current one. */
+  /** Needed to create only without Microsoft sign-in (the API checks). Empty on edit keeps the current one. */
   password: z.string().refine((v) => v === '' || v.length >= 6, 'A senha precisa de pelo menos 6 caracteres'),
 });
 
