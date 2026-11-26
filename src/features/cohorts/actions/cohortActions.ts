@@ -11,9 +11,13 @@ import {
   setEnrollmentCohort,
   updateEnrollmentStatus,
 } from '@/services/enrollments.service';
+import type { StorefrontTag } from '@/services/storefront.service';
 import type { ActionResult } from '@/types/common';
 import type { EnrollmentStatus } from '@/types/enrollments';
 import { cohortSchema, type CohortFormValues } from '../schemas/cohortSchema';
+
+/** The store lists each course's upcoming cohorts: it refreshes its catalog when they change. */
+const STOREFRONT: StorefrontTag[] = ['courses'];
 
 const OTHER_SECTOR = { ok: false as const, error: 'Esta turma é de outro setor.' };
 
@@ -35,14 +39,17 @@ export async function saveCohort(id: string | null, values: CohortFormValues): P
   const taken = id ? (await listEnrollmentsByCohort(id)).length : 0;
   if (parsed.data.totalSeats < taken)
     return { ok: false, error: `O total de vagas não pode ficar abaixo das ${taken} já ocupadas` };
-  return adminMutation('cohorts', ['cohorts'], () =>
-    id ? cohortsService.update(id, parsed.data) : cohortsService.create(parsed.data),
+  return adminMutation(
+    'cohorts',
+    ['cohorts'],
+    () => (id ? cohortsService.update(id, parsed.data) : cohortsService.create(parsed.data)),
+    STOREFRONT,
   );
 }
 
 export async function deleteCohort(id: string): Promise<ActionResult<unknown>> {
   if (await cohortOutside(id)) return OTHER_SECTOR;
-  return adminMutation('cohorts', ['cohorts'], () => cohortsService.remove(id));
+  return adminMutation('cohorts', ['cohorts'], () => cohortsService.remove(id), STOREFRONT);
 }
 
 export interface CancelOutcome {
@@ -56,16 +63,21 @@ export interface CancelOutcome {
  */
 export async function cancelCohort(id: string): Promise<ActionResult<CancelOutcome>> {
   if (await cohortOutside(id)) return OTHER_SECTOR;
-  return adminMutation('cohorts', ['cohorts', 'enrollments'], async () => {
-    const cohorts = withOccupancy(await cohortsService.list(), await listEnrollments());
-    const cohort = cohorts.find((c) => c.id === id);
-    if (!cohort) throw new Error('Turma não encontrada');
-    const substitute = findSubstituteCohort(cohort, cohorts);
-    const people = await listEnrollmentsByCohort(id);
-    for (const e of people) await setEnrollmentCohort(e.id, substitute?.id ?? null);
-    await cohortsService.update(id, { status: 'canceled' });
-    return { movedTo: substitute?.id ?? null, people: people.length };
-  });
+  return adminMutation(
+    'cohorts',
+    ['cohorts', 'enrollments'],
+    async () => {
+      const cohorts = withOccupancy(await cohortsService.list(), await listEnrollments());
+      const cohort = cohorts.find((c) => c.id === id);
+      if (!cohort) throw new Error('Turma não encontrada');
+      const substitute = findSubstituteCohort(cohort, cohorts);
+      const people = await listEnrollmentsByCohort(id);
+      for (const e of people) await setEnrollmentCohort(e.id, substitute?.id ?? null);
+      await cohortsService.update(id, { status: 'canceled' });
+      return { movedTo: substitute?.id ?? null, people: people.length };
+    },
+    STOREFRONT,
+  );
 }
 
 export async function changeEnrollmentStatus(id: string, status: EnrollmentStatus): Promise<ActionResult<unknown>> {

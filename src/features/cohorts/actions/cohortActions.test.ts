@@ -5,7 +5,10 @@ import { cookieJar } from '@/test/cookieJar';
 import { findCurrentAdmin } from '@/services/adminAuth.service';
 import { ownerSession, signInAs } from '@/test/session';
 import { emptyCohort } from '../schemas/cohortSchema';
+import { notifyStorefront } from '@/services/storefront.service';
 import { cancelCohort, changeEnrollmentStatus, deleteCohort, saveCohort, unlinkEnrollment } from './cohortActions';
+
+vi.mock('@/services/storefront.service', () => ({ notifyStorefront: vi.fn(async () => true) }));
 
 beforeEach(() => {
   resetDb();
@@ -131,5 +134,16 @@ describe('unlinkEnrollment (#65)', () => {
 
   it('refuses an enrollment that no longer exists', async () => {
     expect(await unlinkEnrollment('nope', 'motivo')).toEqual({ ok: false, error: 'Matrícula não encontrada.' });
+  });
+});
+
+describe('the store (#storefront)', () => {
+  beforeEach(() => vi.mocked(notifyStorefront).mockClear());
+
+  it('refreshes its catalog when cohorts change', async () => {
+    await saveCohort(null, { ...emptyCohort, courseId: 'cur-1', startDate: '2026-12-01' });
+    await cancelCohort('tur-3');
+    await deleteCohort('tur-2');
+    expect(vi.mocked(notifyStorefront).mock.calls).toEqual([[['courses']], [['courses']], [['courses']]]);
   });
 });
